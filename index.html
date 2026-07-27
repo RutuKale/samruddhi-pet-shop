@@ -1,0 +1,2491 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Samruddhi — a modern pet care marketplace. Food, toys, healthcare, grooming and vet services for dogs, cats, birds and more." />
+  <meta name="theme-color" content="#0f766e" />
+  <link rel="icon" type="image/x-icon" href="./assets/logo.png" />
+  <title>Samruddhi Pet Care Marketplace</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase App & Firestore Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            clay: {
+              50: "#fdf6f0",
+              100: "#fae8da",
+              200: "#f3cdb0",
+              300: "#eaae84",
+              400: "#df8a55",
+              500: "#d26d35",
+              600: "#bb552a",
+              700: "#974124",
+              800: "#7a3622",
+              900: "#642e20",
+            },
+            teal: {
+              50: "#f0fdfa",
+              100: "#ccfbf1",
+              200: "#99f6e4",
+              300: "#5eead4",
+              400: "#2dd4bf",
+              500: "#14b8a6",
+              600: "#0d9488",
+              700: "#0f766e",
+              800: "#115e59",
+              900: "#134e4a",
+            },
+            cream: "#fbf7f0",
+            ink: "#241c17",
+          },
+          fontFamily: {
+            display: ['"Fraunces"', "Georgia", "serif"],
+            sans: ['"Plus Jakarta Sans"', "system-ui", "sans-serif"],
+          },
+          boxShadow: {
+            soft: "0 10px 40px -12px rgba(36,28,23,0.18)",
+            lift: "0 24px 60px -20px rgba(36,28,23,0.30)",
+          },
+          keyframes: {
+            float: {
+              "0%,100%": { transform: "translateY(0)" },
+              "50%": { transform: "translateY(-14px)" },
+            },
+            floatSlow: {
+              "0%,100%": { transform: "translateY(0) rotate(0)" },
+              "50%": { transform: "translateY(-20px) rotate(4deg)" },
+            },
+            fadeUp: {
+              "0%": { opacity: 0, transform: "translateY(24px)" },
+              "100%": { opacity: 1, transform: "translateY(0)" },
+            },
+            shimmer: { "100%": { transform: "translateX(100%)" } },
+            spinSlow: { to: { transform: "rotate(360deg)" } },
+          },
+          animation: {
+            float: "float 6s ease-in-out infinite",
+            floatSlow: "floatSlow 9s ease-in-out infinite",
+            fadeUp: "fadeUp .7s cubic-bezier(.2,.7,.2,1) both",
+            shimmer: "shimmer 1.6s infinite",
+            spinSlow: "spinSlow 1s linear infinite",
+          },
+        },
+      },
+    };
+  </script>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-cream text-ink antialiased">
+  <div id="header-root" class="contents"></div>
+
+  <!-- App view container -->
+  <main id="app" aria-live="polite"></main>
+
+  <div id="footer-root"></div>
+
+  <!-- ===================== OVERLAYS ===================== -->
+  <div id="mobileMenu" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close-menu></div>
+    <aside
+      class="absolute left-0 top-0 h-full w-full bg-gradient-to-br from-cream to-clay-50 dark:from-[#1a140f] dark:to-[#16120e] shadow-2xl p-6 sm:p-8 overflow-auto translate-x-[-100%] transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] flex flex-col"
+      id="mobileMenuPanel">
+      <div class="flex items-center justify-between mb-8 pb-6 border-b border-black/10 dark:border-white/10">
+        <div class="flex items-center gap-4">
+          <div
+            class="w-14 h-14 rounded-[1.5rem] bg-white dark:bg-white/5 shadow-md flex items-center justify-center relative overflow-hidden group">
+            <div
+              class="absolute inset-0 bg-teal-500/10 scale-0 group-hover:scale-100 transition-transform duration-500 rounded-[1.5rem]">
+            </div>
+            <img src="./assets/logo.png" alt="Samruddhi"
+              class="w-9 h-9 object-contain relative z-10 transition-transform duration-500 group-hover:scale-110" />
+          </div>
+          <div class="flex flex-col relative top-0.5">
+            <span
+              class="font-display text-2xl leading-none text-ink dark:text-cream font-semibold tracking-tight">Samruddhi</span>
+            <span
+              class="text-[11px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-[0.2em] mt-1 opacity-90">Pet
+              Shop</span>
+          </div>
+        </div>
+        <button data-close-menu
+          class="w-12 h-12 rounded-full bg-black/5 dark:bg-white/10 text-ink dark:text-cream hover:bg-black/10 dark:hover:bg-white/20 hover:scale-105 active:scale-95 flex items-center justify-center transition-all shadow-sm"
+          aria-label="Close menu">
+          <i class="fa-solid fa-xmark text-xl pointer-events-none opacity-80"></i>
+        </button>
+      </div>
+      <nav id="mobileNav" class="flex-1 flex flex-col space-y-2 text-base"></nav>
+    </aside>
+  </div>
+
+  <div id="cartDrawer" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close-cart></div>
+    <aside
+      class="absolute right-0 top-0 h-full w-full max-w-md bg-cream dark:bg-[#1a140f] shadow-lift flex flex-col translate-x-full transition-transform duration-300"
+      id="cartPanel">
+      <div class="flex items-center justify-between p-5 border-b border-black/10 dark:border-white/10">
+        <h3 class="font-display text-2xl">Your cart</h3>
+        <button data-close-cart class="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10" aria-label="Close cart">
+          ✕
+        </button>
+      </div>
+      <div id="cartItems" class="flex-1 overflow-auto p-5 space-y-4"></div>
+      <div id="cartFooter" class="border-t border-black/10 dark:border-white/10 p-5 space-y-3"></div>
+    </aside>
+  </div>
+
+  <div id="quickModal" class="fixed inset-0 z-50 hidden grid place-items-center p-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close-quick></div>
+    <div class="relative bg-cream dark:bg-[#1a140f] rounded-3xl shadow-lift max-w-3xl w-full max-h-[90vh] overflow-auto"
+      id="quickContent"></div>
+  </div>
+
+  <div id="toasts" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] space-y-2 w-[92%] max-w-sm"></div>
+
+  <div class="fixed right-4 bottom-4 z-30 flex flex-col gap-3">
+    <button id="backTop"
+      class="w-12 h-12 grid place-items-center rounded-full bg-ink text-cream dark:bg-cream dark:text-ink shadow-lift hover:scale-105 transition opacity-0 pointer-events-none"
+      aria-label="Back to top">
+      ↑
+    </button>
+  </div>
+
+  <div id="pageLoader" class="fixed inset-0 z-[70] grid place-items-center bg-cream">
+    <div class="text-center">
+      <div class="w-28 h-28 mx-auto relative flex items-center justify-center">
+        <!-- Floating/pulsing logo -->
+        <img src="./assets/logo.png" alt="Samruddhi" class="w-28 h-28 object-contain animate-pulse relative z-10" />
+        <!-- Spinner ring around the logo -->
+        <div
+          class="absolute inset-0 rounded-full border-4 border-clay-200 border-t-clay-500 border-r-teal-500 animate-spinSlow">
+        </div>
+      </div>
+      <p class="mt-6 font-display text-xl text-ink font-medium tracking-tight">Curating happiness for your companions…
+      </p>
+    </div>
+  </div>
+
+  <script src="About.js"></script>
+  <script src="Contact.js"></script>
+  <script src="Home.js"></script>
+  <script src="Shop.js"></script>
+  <script src="Services.js"></script>
+  <script src="Header.js"></script>
+  <script src="Footer.js"></script>
+  <script src="Login.js"></script>
+  <script src="Checkout.js"></script>
+  <script>
+    /* =========================================================================
+     PAWMARK — Enhanced with Realistic Hero Images
+  ========================================================================= */
+
+    // DOM selection helper utilities
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+    // Initialize Firebase Compat
+    const firebaseConfig = {
+      apiKey: "AIzaSyClg2UeUc4-GR2tOoKjSQerADBxfwzu9aw",
+      authDomain: "samruddhipetshop.firebaseapp.com",
+      projectId: "samruddhipetshop",
+      storageBucket: "samruddhipetshop.firebasestorage.app",
+      messagingSenderId: "904122237189",
+      appId: "1:904122237189:web:4233ed75df9d26bbfd376c",
+      measurementId: "G-F7L4PJSW2N"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+
+    // Populate Header and Footer synchronously at script load time
+    $("#header-root").innerHTML = HeaderComponent();
+    $("#footer-root").innerHTML = FooterComponent();
+
+    const PETS = [
+      {
+        id: "dog",
+        name: "Dogs",
+        emoji: "🐶",
+        tint: "#fae8da",
+        image:
+          "https://plus.unsplash.com/premium_photo-1694819488591-a43907d1c5cc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZG9nfGVufDB8fDB8fHww",
+        icon: '<i class="fa-solid fa-dog" style="color: rgb(0, 150, 136);"></i>',
+      },
+      {
+        id: "cat",
+        name: "Cats",
+        emoji: "🐱",
+        tint: "#ccfbf1",
+        image:
+          "https://plus.unsplash.com/premium_photo-1664299749481-ac8dc8b49754?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+        icon: '<i class="fa-solid fa-cat" style="color: rgb(0, 150, 136);"></i>',
+      },
+      {
+        id: "bird",
+        name: "Birds",
+        emoji: "🦜",
+        tint: "#fde9c8",
+        image:
+          "https://images.unsplash.com/photo-1480044965905-02098d419e96?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmlyZHN8ZW58MHx8MHx8fDA%3D",
+        icon: '<i class="fa-solid fa-dove" style="color: rgb(0, 150, 136);"></i>',
+      },
+      {
+        id: "fish",
+        name: "Fish",
+        emoji: "🐠",
+        tint: "#d6f0fb",
+        image:
+          "https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?w=800&auto=format&fit=crop&q=80",
+        icon: '<i class="fa-solid fa-fish-fins" style="color: rgb(0, 150, 136);"></i>',
+      },
+      {
+        id: "rabbit",
+        name: "Rabbits",
+        emoji: "🐰",
+        tint: "#f3e0f0",
+        image:
+          "https://images.unsplash.com/photo-1535241749838-299277b6305f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8cmFiYml0fGVufDB8fDB8fHww",
+        icon: '<i class="fa-solid fa-carrot" style="color: rgb(0, 150, 136);"></i>',
+      },
+      {
+        id: "small",
+        name: "Small Pets",
+        emoji: "🐹",
+        tint: "#e6f0d6",
+        image:
+          "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=800&auto=format&fit=crop&q=80",
+        icon: '<i class="fa-solid fa-bugs" style="color: rgb(0, 150, 136);"></i>',
+      },
+    ];
+
+    const SHOP_CATEGORIES = [
+      {
+        name: "Pet Food",
+        image: "https://images.unsplash.com/photo-1676193866128-03a926df76ef?w=600",
+        desc: "Grain-free, raw, organic & vet-approved recipes",
+        tags: ["Dogs", "Cats"],
+      },
+      {
+        name: "Treats",
+        image: "https://images.unsplash.com/photo-1588943211346-0908a1fb0b01?w=600",
+        desc: "Baked, freeze-dried, dental sticks & training bites",
+        tags: ["No artificials"],
+      },
+      {
+        name: "Toys",
+        image: "https://images.unsplash.com/photo-1587559070757-f72a388edbba?w=600",
+        desc: "Durable, squeaky, plush & enrichment puzzles",
+        tags: ["Non-toxic"],
+      },
+      {
+        name: "Grooming",
+        image:
+          "https://plus.unsplash.com/premium_photo-1663012822996-ba7e04f3627a?w=600",
+        desc: "Shampoos, brushes & sprays",
+        tags: [],
+      },
+      {
+        name: "Healthcare",
+        image:
+          "https://plus.unsplash.com/premium_photo-1661916447474-235409b19e16?w=600",
+        desc: "Vitamins, flea/tick & joint support",
+        tags: ["Vet recommended"],
+      },
+      {
+        name: "Accessories",
+        image:
+          "https://media.istockphoto.com/id/1397603772/photo/flat-lay-with-accessories-for-dog-and-cat-on-white-wooden-background-pet-care.webp?a=1&b=1&s=612x612&w=0&k=20&c=KtYmxnBgIpZUt195a6RX8kfn8x5tJAqJi0O8qSIzGfU=",
+        desc: "Collars, harnesses & carriers",
+        tags: [],
+      },
+      {
+        name: "Clothing",
+        image: "https://images.unsplash.com/photo-1583336663277-620dc1996580?w=600",
+        desc: "Sweaters, raincoats & pajamas",
+        tags: [],
+      },
+      {
+        name: "Beds & Furniture",
+        image: "https://images.unsplash.com/photo-1573682127988-f67136e7f12a?w=600",
+        desc: "Orthopedic and calming beds",
+        tags: ["Memory foam"],
+      },
+    ];
+
+    const CATEGORIES = [
+      "Pet Food",
+      "Treats",
+      "Toys",
+      "Grooming",
+      "Healthcare",
+      "Accessories",
+      "Clothing",
+      "Beds & Furniture",
+    ];
+    let BRANDS = [
+      "Royal Canin",
+      "Pedigree",
+      "Whiskas",
+      "Drools",
+      "Himalaya",
+      "Farmina",
+      "Sheba",
+      "Beaphar",
+    ];
+    let BRAND_OBJS = [];
+
+    function art(emoji, c1, c2) {
+      return (
+        `data:image/svg+xml;utf8,` +
+        encodeURIComponent(
+          `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'>
+      <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+        <stop offset='0' stop-color='${c1}'/><stop offset='1' stop-color='${c2}'/></linearGradient></defs>
+      <rect width='400' height='400' rx='32' fill='url(#g)'/>
+      <circle cx='200' cy='200' r='118' fill='rgba(255,255,255,.35)'/>
+      <text x='50%' y='50%' font-size='150' text-anchor='middle' dominant-baseline='central'>${emoji}</text>
+    </svg>`,
+        )
+      );
+    }
+
+    const PALETTES = [
+      ["#fae8da", "#f3cdb0"],
+      ["#ccfbf1", "#99f6e4"],
+      ["#fde9c8", "#f6d18a"],
+      ["#d6f0fb", "#a9def0"],
+      ["#f3e0f0", "#e6c6e0"],
+      ["#e6f0d6", "#cfe2b0"],
+    ];
+
+    const PRODUCT_DEFS = [
+      [
+        "Salmon Adult Dry Food",
+        "Pet Food",
+        "dog",
+        "https://plus.unsplash.com/premium_photo-1781127914620-203ed5e5b104?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8U2FsbW9uJTIwQWR1bHQlMjBEcnklMjBGb29kJTIwZG9nJTIwZm9vZHxlbnwwfHwwfHx8MA%3D%3D",
+        24.99,
+        32.0,
+        4.7,
+        1820,
+        "Royal Canin",
+        ["bestseller"],
+      ],
+      [
+        "Grain-Free Chicken Kibble",
+        "Pet Food",
+        "dog",
+        "https://plus.unsplash.com/premium_photo-1726761692986-6bcde87fc2b8?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8R3JhaW4tRnJlZSUyMENoaWNrZW4lMjBLaWJibGUlMjBkb2clMjBmb29kfGVufDB8fDB8fHww",
+        29.5,
+        29.5,
+        4.6,
+        940,
+        "Farmina",
+        [],
+      ],
+      [
+        "Tuna Flakes Wet Food (12pk)",
+        "Pet Food",
+        "cat",
+        "https://plus.unsplash.com/premium_photo-1781416703272-222ffa349d49?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8VHVuYSUyMEZsYWtlcyUyMFdldCUyMEZvb2QlMjAoMTJwayklMjBjYXQlMjBmb29kfGVufDB8fDB8fHww",
+        18.75,
+        22.0,
+        4.8,
+        2200,
+        "Sheba",
+        ["bestseller"],
+      ],
+      [
+        "Hairball Control Formula",
+        "Pet Food",
+        "cat",
+        "https://images.unsplash.com/photo-1577349516274-37ff88a53627?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8SGFpcmJhbGwlMjBDb250cm9sJTIwRm9ybXVsYSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+        21.0,
+        25.0,
+        4.5,
+        610,
+        "Whiskas",
+        [],
+      ],
+      [
+        "Dental Chew Sticks",
+        "Treats",
+        "dog",
+        "https://images.unsplash.com/photo-1592468257342-8375cb556a69?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8RGVudGFsJTIwQ2hldyUyMFN0aWNrcyUyMGRvZ3xlbnwwfHwwfHx8MA%3D%3D",
+        9.99,
+        12.99,
+        4.9,
+        3100,
+        "Pedigree",
+        ["bestseller"],
+      ],
+      [
+        "Freeze-Dried Liver Bites",
+        "Treats",
+        "cat",
+        "https://images.unsplash.com/photo-1626544379809-e0031867d50c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8RnJlZXplLURyaWVkJTIwTGl2ZXIlMjBCaXRlcyUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+        7.5,
+        7.5,
+        4.7,
+        880,
+        "Drools",
+        [],
+      ],
+      [
+        "Catnip Crunch Treats",
+        "Treats",
+        "cat",
+        "https://plus.unsplash.com/premium_photo-1781570757274-d1277b644a22?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Q2F0bmlwJTIwQ3J1bmNoJTIwVHJlYXRzJTIwY2F0fGVufDB8fDB8fHww",
+        6.25,
+        8.0,
+        4.6,
+        1340,
+        "Whiskas",
+        [],
+      ],
+      [
+        "Rope Tug Toy",
+        "Toys",
+        "dog",
+        "https://images.unsplash.com/photo-1624609602652-b8ca6234bace?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Um9wZSUyMFR1ZyUyMFRveSUyMGRvZ3xlbnwwfHwwfHx8MA%3D%3D",
+        8.99,
+        8.99,
+        4.4,
+        520,
+        "Pedigree",
+        [],
+      ],
+      [
+        "Squeaky Plush Duck",
+        "Toys",
+        "dog",
+        "https://images.unsplash.com/photo-1755617616108-d97774b1754c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8U3F1ZWFreSUyMFBsdXNoJTIwRHVjayUyMGRvZ3xlbnwwfHwwfHx8MA%3D%3D",
+        11.5,
+        15.0,
+        4.5,
+        770,
+        "Beaphar",
+        [],
+      ],
+      [
+        "Feather Teaser Wand",
+        "Toys",
+        "cat",
+        "https://images.unsplash.com/photo-1638826595775-e2eae86cda8e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8RmVhdGhlciUyMFRlYXNlciUyMFdhbmQlMjBjYXR8ZW58MHx8MHx8fDA%3D",
+        5.99,
+        5.99,
+        4.7,
+        1990,
+        "Sheba",
+        ["bestseller"],
+      ],
+      [
+        "Spinning Bird Mirror",
+        "Toys",
+        "bird",
+        "https://images.unsplash.com/photo-1620113259201-2792b1f8f50c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8U3Bpbm5pbmclMjBCaXJkJTIwTWlycm9yJTIwdG95JTIwYmlyZHxlbnwwfHwwfHx8MA%3D%3D",
+        13.0,
+        17.0,
+        4.3,
+        210,
+        "Beaphar",
+        [],
+      ],
+      [
+        "Oatmeal Calming Shampoo",
+        "Grooming",
+        "dog",
+        "https://plus.unsplash.com/premium_photo-1661274062486-3b792550ab7e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8T2F0bWVhbCUyMENhbG1pbmclMjBTaGFtcG9vJTIwZG9nfGVufDB8fDB8fHww",
+        13.49,
+        16.0,
+        4.8,
+        1450,
+        "Himalaya",
+        ["bestseller"],
+      ],
+      [
+        "Slicker Brush Pro",
+        "Grooming",
+        "cat",
+        "https://media.istockphoto.com/id/2248173973/photo/woman-brushing-her-cat-on-sofa-indoors-closeup.webp?a=1&b=1&s=612x612&w=0&k=20&c=WErEU1Kl_hbZ2Cml1_IW0YqWdYtr4QmJcxJzD3hNWxE=",
+        10.0,
+        10.0,
+        4.6,
+        690,
+        "Beaphar",
+        [],
+      ],
+      [
+        "Paw Balm Soother",
+        "Grooming",
+        "dog",
+        "https://plus.unsplash.com/premium_photo-1718055460270-79b5500cfad4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8UGF3JTIwQmFsbSUyMFNvb3RoZXIlMjBkb2d8ZW58MHx8MHx8fDA%3D",
+        8.75,
+        11.0,
+        4.5,
+        430,
+        "Himalaya",
+        [],
+      ],
+      [
+        "Joint Support Tablets",
+        "Healthcare",
+        "dog",
+        "https://media.istockphoto.com/id/2150560006/photo/dog-medication-concept-hand-holding-a-pill-with-unfocused-golden-retriever-dog-with-injured.webp?a=1&b=1&s=612x612&w=0&k=20&c=zme59kbjUuIfEDTCa4Z8oZthrkBWB6O04Yz81-6xH-E=",
+        27.0,
+        34.0,
+        4.7,
+        1120,
+        "Himalaya",
+        ["bestseller", "vet"],
+      ],
+      [
+        "Omega-3 Skin & Coat Oil",
+        "Healthcare",
+        "cat",
+        "https://images.unsplash.com/photo-1633121929642-13ddb3cf7599?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8T21lZ2EtMyUyMFNraW4lMjAlMjYlMjBDb2F0JTIwT2lsJTIwY2F0fGVufDB8fDB8fHww",
+        19.99,
+        24.0,
+        4.8,
+        980,
+        "Farmina",
+        ["vet"],
+      ],
+      [
+        "Multivitamin Gummies",
+        "Healthcare",
+        "dog",
+        "https://plus.unsplash.com/premium_photo-1661310059065-2c13701055ed?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TXVsdGl2aXRhbWluJTIwR3VtbWllcyUyMGRvZ3xlbnwwfHwwfHx8MA%3D%3D",
+        15.5,
+        15.5,
+        4.6,
+        560,
+        "Drools",
+        ["vet"],
+      ],
+      [
+        "Flea & Tick Spot-On",
+        "Healthcare",
+        "cat",
+        "https://plus.unsplash.com/premium_photo-1677165327781-1c0b7c458821?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fEZsZWElMjAlMjYlMjBUaWNrJTIwU3BvdC1PbiUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+        22.5,
+        28.0,
+        4.4,
+        1310,
+        "Beaphar",
+        ["vet"],
+      ],
+      [
+        "Probiotic Digestive Aid",
+        "Healthcare",
+        "dog",
+        "https://media.istockphoto.com/id/1547703847/photo/dog-dewormer-with-food-in-hand-of-veterinarian-or-pet-owner.webp?a=1&b=1&s=612x612&w=0&k=20&c=H-UOYvFTh8-a7w5Z7pK_wbibnNUfFEsjO9YBMbQUlpY=",
+        24.0,
+        24.0,
+        4.7,
+        400,
+        "Himalaya",
+        ["vet"],
+      ],
+      [
+        "Adjustable Leather Collar",
+        "Accessories",
+        "dog",
+        "https://images.unsplash.com/photo-1667716705760-233650f8f3fe?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8QWRqdXN0YWJsZSUyMExlYXRoZXIlMjBDb2xsYXIlMjBkb2d8ZW58MHx8MHx8fDA%3D",
+        16.99,
+        21.0,
+        4.6,
+        830,
+        "Beaphar",
+        [],
+      ],
+      [
+        "Retractable Leash 5m",
+        "Accessories",
+        "dog",
+        "https://images.unsplash.com/photo-1719910448244-b87daa191c1a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fFJldHJhY3RhYmxlJTIwTGVhc2glMjA1bSUyMGRvZ3xlbnwwfHwwfHx8MA%3D%3D",
+        19.5,
+        19.5,
+        4.5,
+        1240,
+        "Pedigree",
+        ["bestseller"],
+      ],
+      [
+        "Ceramic Food Bowl Set",
+        "Accessories",
+        "cat",
+        "https://images.unsplash.com/photo-1734654901149-02a9a5f7993b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Q2VyYW1pYyUyMEZvb2QlMjBCb3dsJTIwU2V0JTIwY2F0fGVufDB8fDB8fHww",
+        23.0,
+        29.0,
+        4.7,
+        510,
+        "Sheba",
+        [],
+      ],
+      [
+        "Cozy Knit Sweater",
+        "Clothing",
+        "dog",
+        "https://images.unsplash.com/photo-1575464658192-ac2c921a2b93?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Q296eSUyMEtuaXQlMjBTd2VhdGVyJTIwZG9nfGVufDB8fDB8fHww",
+        18.0,
+        24.0,
+        4.4,
+        360,
+        "Beaphar",
+        [],
+      ],
+      [
+        "Rainproof Pet Jacket",
+        "Clothing",
+        "dog",
+        "https://images.unsplash.com/photo-1530041539828-114de669390e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8UmFpbnByb29mJTIwUGV0JTIwSmFja2V0JTIwZG9nfGVufDB8fDB8fHww",
+        26.5,
+        33.0,
+        4.6,
+        290,
+        "Farmina",
+        [],
+      ],
+      [
+        "Orthopedic Memory Bed",
+        "Beds & Furniture",
+        "dog",
+        "https://images.unsplash.com/photo-1598397678815-c5dc869035b8?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8T3J0aG9wZWRpYyUyME1lbW9yeSUyMEJlZCUyMGRvZ3xlbnwwfHwwfHx8MA%3D%3D",
+        49.99,
+        69.0,
+        4.9,
+        2100,
+        "Royal Canin",
+        ["bestseller"],
+      ],
+      [
+        "Plush Donut Cuddler",
+        "Beds & Furniture",
+        "cat",
+        "https://images.unsplash.com/photo-1541188495357-ad2dc89487f4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8UGx1c2glMjBEb251dCUyMEN1ZGRsZXIlMjBjYXR8ZW58MHx8MHx8fDA%3D",
+        32.0,
+        40.0,
+        4.8,
+        1450,
+        "Whiskas",
+        ["bestseller"],
+      ],
+      [
+        "Cat Scratching Tower",
+        "Beds & Furniture",
+        "cat",
+        "https://images.unsplash.com/photo-1601758065893-25c11bfa69b5?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2F0JTIwdG93ZXJ8ZW58MHx8MHx8fDA%3D",
+        58.0,
+        75.0,
+        4.7,
+        690,
+        "Sheba",
+        [],
+      ],
+      [
+        "Aquarium Starter Kit",
+        "Accessories",
+        "fish",
+        "https://images.unsplash.com/photo-1520301255226-bf5f144451c1?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8QXF1YXJpdW0lMjBTdGFydGVyJTIwS2l0fGVufDB8fDB8fHww",
+        44.0,
+        54.0,
+        4.5,
+        320,
+        "Farmina",
+        [],
+      ],
+      [
+        "Tropical Flake Food",
+        "Pet Food",
+        "fish",
+        "https://images.unsplash.com/photo-1596753055375-7314a20f6106?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8VHJvcGljYWwlMjBGbGFrZSUyMEZvb2QlMjBmaXNofGVufDB8fDB8fHww",
+        7.99,
+        7.99,
+        4.6,
+        540,
+        "Drools",
+        [],
+      ],
+      [
+        "Timothy Hay Bundle",
+        "Pet Food",
+        "rabbit",
+        "https://plus.unsplash.com/premium_photo-1701011134551-9b734897968e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8VGltb3RoeSUyMEhheSUyMEJ1bmRsZSUyMHJhYmJpdCUyMGZvb2R8ZW58MHx8MHx8fDA%3D",
+        12.0,
+        14.0,
+        4.8,
+        470,
+        "Himalaya",
+        ["bestseller"],
+      ],
+      [
+        "Chew Wood Sticks",
+        "Treats",
+        "small",
+        "https://plus.unsplash.com/premium_photo-1740323024008-828ef19eae65?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Q2hldyUyMFdvb2QlMjBTdGlja3N8ZW58MHx8MHx8fDA%3D",
+        5.5,
+        5.5,
+        4.5,
+        260,
+        "Beaphar",
+        [],
+      ],
+      [
+        "Exercise Hamster Wheel",
+        "Toys",
+        "small",
+        "https://media.istockphoto.com/id/1430962919/photo/bengal-cat-on-a-running-wheel.jpg?s=2048x2048&w=is&k=20&c=9XXVnvjXvPNd3_f2bPydgo6QOg6A2udYlCThVlhdRTA=",
+        14.99,
+        18.0,
+        4.4,
+        180,
+        "Pedigree",
+        [],
+      ],
+      [
+        "Bird Seed Medley",
+        "Pet Food",
+        "bird",
+        "https://images.unsplash.com/photo-1621807147195-580cddd8f758?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8QmlyZCUyMFNlZWQlMjBNZWRsZXklMjBmb29kfGVufDB8fDB8fHww",
+        9.49,
+        9.49,
+        4.7,
+        390,
+        "Drools",
+        [],
+      ],
+      [
+        "Heated Snuggle Pad",
+        "Beds & Furniture",
+        "small",
+        "https://images.unsplash.com/photo-1653638390484-bc1c263ce9e4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8SGVhdGVkJTIwU251Z2dsZSUyMFBhZCUyMHBldHxlbnwwfHwwfHx8MA%3D%3D",
+        21.0,
+        26.0,
+        4.6,
+        150,
+        "Farmina",
+        [],
+      ],
+    ];
+
+    let PRODUCTS = PRODUCT_DEFS.map((p, i) => {
+      const [name, cat, pet, imageUrl, price, mrp, rating, reviews, brand, tags] =
+        p;
+      const pal = PALETTES[i % PALETTES.length];
+      const discount = mrp > price ? Math.round((1 - price / mrp) * 100) : 0;
+      return {
+        id: "p" + (i + 1),
+        name,
+        category: cat,
+        pet,
+        price,
+        mrp,
+        rating,
+        reviews,
+        brand,
+        tags,
+        discount,
+        image: imageUrl,
+        gallery: [imageUrl],
+        desc: `Premium ${cat.toLowerCase()} crafted for ${PETS.find((x) => x.id === pet)?.name.toLowerCase() || "pets"}. Vet-formulated, ethically sourced, and loved by thousands of happy companions.`,
+        stock: 8 + ((i * 3) % 40),
+      };
+    });
+
+    const SERVICES = [
+      {
+        icon: "🥣",
+        name: "Pet Foods",
+        desc: "Vet-formulated nutrition, delivered before the bowl runs empty.",
+        price: "from ₹250",
+      },
+      {
+        icon: "🛍️",
+        name: "Pet Accessories",
+        desc: "Collars, leashes, toys and more for your companion.",
+        price: "from ₹29",
+      },
+      {
+        icon: "✂️",
+        name: "Grooming & Spa Service",
+        desc: "At-home spa days and full grooming & Spa packages.",
+        price: "from ₹39",
+      },
+      {
+        icon: "🐠",
+        name: "Aquarium Setup and Maintainance",
+        desc: "We help you set up and maintain your aquarium for a healthy aquatic environment.",
+        price: "from ₹499",
+      },
+      {
+        icon: "🐟",
+        name: "Fish and Aquarium Supplies",
+        desc: "We provide a wide range of fish and aquarium supplies to keep your aquatic pets happy and healthy.",
+        price: "from ₹99",
+      },
+    ];
+
+    const REVIEWS = [
+      {
+        name: "Maya R.",
+        pet: "Beagle parent",
+        stars: 5,
+        text: "Samruddhi Pet Shop delivered Luna’s food the same evening. The vet chat caught an ear infection early — genuinely grateful.",
+      },
+      {
+        name: "Daniel K.",
+        pet: "Two cats",
+        stars: 5,
+        text: "The donut cuddler is a hit. Both cats fight over it daily. Checkout was the smoothest I’ve used.",
+      },
+      {
+        name: "Priya S.",
+        pet: "Rabbit owner",
+        stars: 4,
+        text: "Great hay quality and fast shipping. Wishlist feature helped me plan the monthly order.",
+      },
+      {
+        name: "Tom B.",
+        pet: "German Shepherd",
+        stars: 5,
+        text: "Joint tablets made a visible difference in Max’s mobility. The vet recommendation badge built trust.",
+      },
+      {
+        name: "Aisha N.",
+        pet: "Parakeet",
+        stars: 5,
+        text: "Loved the curated bird section. Hard to find good supplies elsewhere — Samruddhi Pet Shop nailed it.",
+      },
+    ];
+
+    const BLOG = [
+      {
+        tag: "Nutrition",
+        title: "How much should you really feed your dog?",
+        excerpt: "A weight-and-activity guide vets actually agree on.",
+        emoji: "🥣",
+        image: "https://images.unsplash.com/photo-1597843786271-1027c561c6ff?w=600",
+        read: "6 min",
+      },
+      {
+        tag: "Wellness",
+        title: "5 signs your cat is secretly stressed",
+        excerpt: "Subtle behaviour changes worth watching for.",
+        emoji: "🐱",
+        image:
+          "https://plus.unsplash.com/premium_photo-1661912016908-c7a22e1f409e?w=600",
+        read: "4 min",
+      },
+      {
+        tag: "Training",
+        title: "Crate training without the guilt",
+        excerpt: "Make the crate a safe haven in a week.",
+        emoji: "🎓",
+        image: "https://images.unsplash.com/photo-1581753418434-51c11169a3c1?w=600",
+        read: "7 min",
+      },
+      {
+        tag: "Seasonal",
+        title: "Summer paw care: beating hot pavement",
+        excerpt: "The 7-second test that prevents burns.",
+        emoji: "☀️",
+        image:
+          "https://images.unsplash.com/photo-1776997252661-44465d477425?q=80&w=1332",
+        read: "3 min",
+      },
+    ];
+
+    // --- ENHANCED HERO SLIDES with REAL IMAGES ---
+    const HERO_SLIDES = [
+      {
+        eyebrow: "New season",
+        title: "Food that fuels the zoomies",
+        sub: "Vet-formulated nutrition, delivered before the bowl runs empty.",
+        cta: "Shop food",
+        image:
+          "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=1200&auto=format&fit=crop&q=80",
+        alt: "Happy golden retriever running in a sunny field",
+        tint: ["#fae8da", "#f3cdb0"],
+        emoji: "🐶",
+      },
+      {
+        eyebrow: "Pharmacy",
+        title: "Healthcare your vet would pick",
+        sub: "Supplements and medicines, backed by real veterinarians.",
+        cta: "Shop pharmacy",
+        image:
+          "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200&auto=format&fit=crop&q=80",
+        alt: "Calm orange cat resting on a windowsill with sunlight",
+        tint: ["#ccfbf1", "#99f6e4"],
+        emoji: "💊",
+      },
+      {
+        eyebrow: "Comfort",
+        title: "Beds worth dreaming in",
+        sub: "Orthopedic support and cloud-soft cuddlers, up to 30% off.",
+        cta: "Shop beds",
+        image:
+          "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=1200&auto=format&fit=crop&q=80",
+        alt: "Adorable white rabbit sleeping peacefully",
+        tint: ["#f3e0f0", "#e6c6e0"],
+        emoji: "🛏️",
+      },
+    ];
+
+    /* -------------------------------------------------------------------------
+           2. STATE
+           ------------------------------------------------------------------------- */
+    const State = {
+      cart: [],
+      wishlist: [],
+      recentlyViewed: [],
+      route: "home",
+      shopFilters: {
+        pet: "all",
+        category: "all",
+        brand: "all",
+        sort: "popular",
+        q: "",
+        page: 1,
+      },
+    };
+    const PER_PAGE = 9;
+
+    /* -------------------------------------------------------------------------
+           3. UTILS
+           ------------------------------------------------------------------------- */
+    const app = $("#app");
+    const money = (n) => "₹" + Number(n).toFixed(2);
+    const byId = (id) => PRODUCTS.find((p) => p.id === id);
+    function getCartItemInfo(item) {
+      const p = byId(item.id);
+      if (!p) return null;
+      const vIdx = item.variantIdx !== undefined ? item.variantIdx : 0;
+      const variant = p.variants && p.variants[vIdx] ? p.variants[vIdx] : null;
+      return {
+        ...p,
+        name: variant ? `${p.name} (${variant.size})` : p.name,
+        price: variant ? variant.price : p.price,
+        image: variant ? variant.imageUrl : p.image
+      };
+    }
+    const petName = (id) => (PETS.find((p) => p.id === id) || {}).name || "Pet";
+
+    function stars(rating, size = "w-4 h-4") {
+      let html = "";
+      for (let i = 1; i <= 5; i++) {
+        const fill =
+          rating >= i ? "#df8a55" : rating >= i - 0.5 ? "url(#half)" : "none";
+        html += `<svg class="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="#df8a55" stroke-width="1.5">
+      <defs><linearGradient id="half"><stop offset="50%" stop-color="#df8a55"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs>
+      <path d="M12 2l2.9 6.3 6.9.6-5.2 4.5 1.6 6.7L12 17.8 5.8 20.6l1.6-6.7L2.2 8.9l6.9-.6z"/></svg>`;
+      }
+      return `<span class="inline-flex items-center gap-0.5">${html}</span>`;
+    }
+
+    function toast(msg, kind = "ok") {
+      const colors = {
+        ok: "bg-teal-600",
+        warn: "bg-clay-500",
+        info: "bg-ink dark:bg-cream dark:text-ink",
+      };
+      const el = document.createElement("div");
+      el.className = `glass ${colors[kind]} text-white rounded-2xl px-4 py-3 shadow-lift text-sm font-medium flex items-center gap-2 translate-y-3 opacity-0 transition-all`;
+      el.innerHTML = `<span>${kind === "ok" ? "✅" : kind === "warn" ? "💛" : "🐾"}</span><span>${msg}</span>`;
+      $("#toasts").appendChild(el);
+      requestAnimationFrame(() => {
+        el.classList.remove("translate-y-3", "opacity-0");
+      });
+      setTimeout(() => {
+        el.classList.add("opacity-0", "translate-y-3");
+        setTimeout(() => el.remove(), 300);
+      }, 2600);
+    }
+
+    const lazyObserver = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            const img = e.target;
+            if (img.dataset.src) {
+              img.src = img.dataset.src;
+              img.removeAttribute("data-src");
+            }
+            img.classList.remove("skel");
+            obs.unobserve(img);
+          }
+        });
+      },
+      { rootMargin: "200px" },
+    );
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("in");
+            revealObserver.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12 },
+    );
+
+    function hydrateView() {
+      $$("#app img[data-src]").forEach((img) => lazyObserver.observe(img));
+      $$("#app .reveal").forEach((el) => revealObserver.observe(el));
+    }
+
+    /* -------------------------------------------------------------------------
+           4. COMPONENTS
+           ------------------------------------------------------------------------- */
+    function productCard(p) {
+      const inWish = State.wishlist.includes(p.id);
+      return `
+  <article class="reveal group relative bg-white dark:bg-[#1d1712] rounded-2xl sm:rounded-3xl shadow-soft hover:shadow-lift transition-all duration-300 overflow-hidden flex flex-col">
+    <div class="relative">
+      <a href="#" data-nav="product" data-id="${p.id}" class="block aspect-square overflow-hidden bg-clay-50/50 dark:bg-black/20 p-2">
+        <img data-src="${p.image}" alt="${p.name}" class="skel w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" loading="lazy"/>
+      </a>
+      <!--${p.discount ? `<span class="absolute top-3 left-3 bg-clay-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">-${p.discount}%</span>` : ""}-->
+      ${p.tags.includes("vet") ? `<span class="absolute top-3 ${p.discount ? "left-16" : "left-3"} bg-teal-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full">Vet pick</span>` : ""}
+      <button data-wish="${p.id}" aria-label="Toggle wishlist" class="absolute top-3 right-3 w-9 h-9 grid place-items-center rounded-full glass shadow-soft hover:scale-110 transition ${inWish ? "text-clay-500" : "text-ink/60 dark:text-cream/60"}">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="${inWish ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2"><path d="M19 14c1.5-1.5 3-3.4 3-5.5A3.5 3.5 0 0 0 15.5 6L12 9.5 8.5 6A3.5 3.5 0 0 0 2 8.5C2 10.6 3.5 12.5 5 14l7 7Z"/></svg>
+      </button>
+      <button data-quick="${p.id}" class="absolute inset-x-3 bottom-3 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all bg-ink/90 text-cream text-sm font-medium py-2 rounded-full backdrop-blur">Quick view</button>
+    </div>
+    <div class="p-3 sm:p-4 flex flex-col flex-1">
+      <p class="text-xs text-teal-700 dark:text-teal-300 font-semibold uppercase tracking-wide">${p.category}</p>
+      <a href="#" data-nav="product" data-id="${p.id}" class="font-display text-base sm:text-lg leading-snug mt-1 hover:text-clay-600 transition line-clamp-2">${p.name}</a>
+      <div class="flex items-center gap-1.5 mt-1.5 text-sm">${stars(p.rating)}<span class="text-ink/50 dark:text-cream/50">(${p.reviews})</span></div>
+      <div class="mt-auto pt-3 flex items-end justify-between gap-2">
+        <div>
+          <span class="font-bold text-base sm:text-lg">${money(p.price)}</span>
+          ${p.discount ? `<span class="text-sm text-ink/40 dark:text-cream/40 line-through ml-1">${money(p.mrp)}</span>` : ""}
+        </div>
+        <button data-add="${p.id}" class="shrink-0 grid place-items-center w-10 h-10 rounded-full bg-teal-600 text-white hover:bg-teal-700 active:scale-90 transition" aria-label="Add ${p.name} to cart">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+    </div>
+  </article>`;
+    }
+
+    function sectionHead(eyebrow, title, sub) {
+      return `<div class="reveal text-center max-w-2xl mx-auto mb-10">
+    <p class="text-clay-600 dark:text-clay-300 font-semibold uppercase tracking-widest text-xs">${eyebrow}</p>
+    <h2 class="font-display text-3xl sm:text-4xl mt-2">${title}</h2>
+    ${sub ? `<p class="text-ink/60 dark:text-cream/60 mt-3">${sub}</p>` : ""}
+  </div>`;
+    }
+
+    function skeletonGrid(n = 8) {
+      return `<div class="grid grid-cols-2 lg:grid-cols-4 gap-5">${Array.from({
+        length: n,
+      })
+        .map(
+          () => `
+    <div class="bg-white dark:bg-[#1d1712] rounded-3xl overflow-hidden shadow-soft">
+      <div class="aspect-square skel"></div>
+      <div class="p-4 space-y-3"><div class="h-3 w-1/3 skel rounded"></div><div class="h-4 w-3/4 skel rounded"></div><div class="h-5 w-1/2 skel rounded"></div></div>
+    </div>`,
+        )
+        .join("")}</div>`;
+    }
+
+    /* -------------------------------------------------------------------------
+           5. PAGES
+           ------------------------------------------------------------------------- */
+    /* HomePage is loaded from Home.js */
+
+    /* ShopPage is loaded from Shop.js */
+
+    /* ---------- PRODUCT DETAILS ---------- */
+    function ProductPage(id) {
+      const p = byId(id);
+      if (!p)
+        return `<div class="mx-auto max-w-3xl px-4 py-20 text-center"><p class="font-display text-2xl">Product not found.</p></div>`;
+      recordRecentlyViewed(id);
+      const inWish = State.wishlist.includes(id);
+      const related = PRODUCTS.filter((x) => x.pet === p.pet && x.id !== id).slice(
+        0,
+        4,
+      );
+      const fbt = [
+        p,
+        ...PRODUCTS.filter((x) => x.id !== id && x.pet === p.pet).slice(0, 2),
+      ];
+      const fbtTotal = fbt.reduce((s, x) => s + x.price, 0);
+
+      const features = [];
+      if (p.freeShipping !== false) features.push(["🚚", "Free over ₹49"]);
+      if (p.returnPolicy !== false) features.push(["↩️", "30-day returns"]);
+      if (p.vetSupport) features.push(["🩺", "Vet support"]);
+
+      return `
+  <section class="mx-auto max-w-7xl px-4 py-8">
+    <nav class="text-sm text-ink/50 dark:text-cream/50 mb-6"><a href="#" data-nav="home" class="hover:text-clay-600">Home</a> / <a href="#" data-nav="shop" class="hover:text-clay-600">Shop</a> / <span class="text-ink dark:text-cream">${p.name}</span></nav>
+    <div class="grid lg:grid-cols-[45%_minmax(0,1fr)] gap-8 lg:gap-12 items-start">
+      <div class="max-w-md mx-auto lg:mx-0 w-full">
+        <div class="rounded-2xl sm:rounded-[2rem] overflow-hidden bg-white dark:bg-[#1d1712] shadow-soft aspect-square bg-[#fcf8f2] dark:bg-black/20 p-4">
+          <img id="galleryMain" src="${p.gallery[0]}" alt="${p.name}" class="w-full h-full object-contain"/>
+        </div>
+        <div class="flex gap-3 mt-4 overflow-x-auto no-bar pb-1">
+          ${p.gallery.map((g, i) => `<button data-gallery="${g}" class="thumb shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl overflow-hidden ring-2 ${i === 0 ? "ring-teal-600" : "ring-transparent"} shadow-soft bg-[#fcf8f2] dark:bg-black/20 p-1"><img src="${g}" alt="View ${i + 1}" class="w-full h-full object-contain"/></button>`).join("")}
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-semibold text-teal-700 dark:text-teal-300 uppercase tracking-wide">${p.brand}</span>
+          ${p.tags.includes("vet") || p.vetSupport ? `<span class="text-xs bg-teal-600 text-white px-2 py-0.5 rounded-full">Vet recommended</span>` : ""}
+          ${p.tags.includes("bestseller") ? `<span class="text-xs bg-clay-500 text-white px-2 py-0.5 rounded-full">Bestseller</span>` : ""}
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl">${p.name}</h1>
+        <div class="flex items-center gap-2 mt-3">${stars(p.rating, "w-5 h-5")}<span class="text-ink/60 dark:text-cream/60">${p.rating} · ${p.reviews} reviews</span></div>
+        <div class="flex flex-wrap items-end gap-3 mt-5">
+          <span class="price-value font-display text-3xl sm:text-4xl">${money(p.price)}</span>
+          ${p.discount ? `<span class="text-lg text-ink/40 dark:text-cream/40 line-through">${money(p.mrp)}</span><span class="bg-clay-100 dark:bg-clay-900/40 text-clay-700 dark:text-clay-300 text-sm font-bold px-2 py-1 rounded-full">Save ${p.discount}%</span>` : ""}
+        </div>
+        <p class="text-ink/70 dark:text-cream/70 mt-5 leading-relaxed">${p.desc}</p>
+        <p class="text-sm mt-3 ${p.stock < 12 ? "text-clay-600 dark:text-clay-300" : "text-teal-700 dark:text-teal-300"}">${p.stock < 12 ? `Only ${p.stock} left — order soon` : "In stock · ships today"}</p>
+
+        <!-- Variants Selector -->
+        ${p.variants && p.variants.length > 0 ? `
+        <div class="mt-5 border-t border-black/5 dark:border-white/5 pt-4">
+          <label class="text-sm font-semibold text-ink/75 dark:text-cream/75 uppercase tracking-widest text-[10px]">Select Packaging / Size</label>
+          <div class="flex flex-wrap gap-2 mt-2 animate-fade-in" id="variantSelectContainer">
+            ${p.variants.map((v, idx) => `
+              <button data-variant-idx="${idx}" data-product-id="${p.id}" class="variant-pill px-4 py-2 rounded-full border text-sm font-medium transition ${idx === 0 ? "border-teal-600 bg-teal-50 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300" : "border-black/10 dark:border-white/10 hover:border-teal-600 text-ink/70 dark:text-cream/70"}">
+                ${v.size} (${money(v.price)})
+              </button>
+            `).join("")}
+          </div>
+        </div>
+        ` : ""}
+
+        <div class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 mt-6">
+          <div class="flex items-center rounded-full bg-white dark:bg-[#1d1712] shadow-soft">
+            <button id="qtyMinus" class="w-11 h-11 grid place-items-center text-xl">−</button>
+            <span id="qtyVal" class="w-10 text-center font-semibold">1</span>
+            <button id="qtyPlus" class="w-11 h-11 grid place-items-center text-xl">+</button>
+          </div>
+          <button data-add-qty="${p.id}" class="flex-1 sm:min-w-[180px] px-7 py-3.5 rounded-full bg-teal-600 text-white font-semibold hover:bg-teal-700 transition">Add to cart</button>
+          <button data-wish="${p.id}" class="w-12 h-12 grid place-items-center rounded-full bg-white dark:bg-[#1d1712] shadow-soft ${inWish ? "text-clay-500" : ""}" aria-label="Wishlist">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="${inWish ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2"><path d="M19 14c1.5-1.5 3-3.4 3-5.5A3.5 3.5 0 0 0 15.5 6L12 9.5 8.5 6A3.5 3.5 0 0 0 2 8.5C2 10.6 3.5 12.5 5 14l7 7Z"/></svg>
+          </button>
+        </div>
+
+        ${features.length > 0 ? `
+        <div class="grid grid-cols-1 sm:grid-cols-${features.length} gap-3 mt-7 text-center text-sm">
+          ${features
+            .map(
+              ([e, t]) =>
+                `<div class="rounded-2xl bg-clay-50 dark:bg-white/5 p-3"><div class="text-xl">${e}</div><div class="text-ink/60 dark:text-cream/60 mt-1">${t}</div></div>`,
+            )
+            .join("")}
+        </div>
+        ` : ""}
+      </div>
+    </div>
+
+    <div class="mt-16 reveal">
+      <h2 class="font-display text-2xl mb-5">Frequently bought together</h2>
+      <div class="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1d1712] shadow-soft p-5 sm:p-6 flex flex-col lg:flex-row items-center gap-6">
+        <div class="flex items-center gap-3 flex-wrap justify-center">
+          ${fbt.map((x, i) => `${i ? '<span class="text-2xl text-ink/30">+</span>' : ""}<img src="${x.image}" alt="${x.name}" class="w-24 h-24 rounded-2xl object-cover shadow-soft"/>`).join("")}
+        </div>
+        <div class="flex-1 text-center lg:text-left">
+          <p class="text-ink/60 dark:text-cream/60 text-sm">${fbt.map((x) => x.name).join(" + ")}</p>
+          <p class="font-display text-2xl mt-1">Bundle total ${money(fbtTotal)}</p>
+        </div>
+        <button data-add-bundle="${fbt.map((x) => x.id).join(",")}" class="w-full sm:w-auto px-6 py-3 rounded-full bg-clay-500 text-white font-semibold hover:bg-clay-600">Add all 3 to cart</button>
+      </div>
+    </div>
+
+    <div class="mt-16">
+      <h2 class="font-display text-2xl mb-5">You may also like</h2>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">${related.map(productCard).join("")}</div>
+    </div>
+
+    ${recentlyViewedBlock(id)}
+  </section>`;
+    }
+
+    function recentlyViewedBlock(excludeId) {
+      const items = State.recentlyViewed
+        .filter((id) => id !== excludeId)
+        .map(byId)
+        .filter(Boolean)
+        .slice(0, 4);
+      if (!items.length) return "";
+      return `<div class="mt-16">
+    <h2 class="font-display text-2xl mb-5">Recently viewed</h2>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">${items.map(productCard).join("")}</div>
+  </div>`;
+    }
+
+    /* ---------- CART PAGE ---------- */
+    function CartPage() {
+      if (!State.cart.length) {
+        return emptyState(
+          "Your cart is empty",
+          "Fill it with treats, toys and a little love.",
+          "Start shopping",
+          "shop",
+          "🛒",
+        );
+      }
+      const rows = State.cart
+        .map((item) => {
+          const p = getCartItemInfo(item);
+          if (!p) return "";
+          const vIdx = item.variantIdx || 0;
+          return `<div class="flex flex-col sm:flex-row gap-4 py-5 border-b border-black/10 dark:border-white/10">
+      <img src="${p.image}" alt="${p.name}" class="w-full sm:w-24 h-40 sm:h-24 rounded-2xl object-contain bg-clay-50/50 dark:bg-black/20 p-2 shadow-soft"/>
+      <div class="flex-1">
+        <div class="flex justify-between gap-3">
+          <div>
+            <a href="#" data-nav="product" data-id="${p.id}" class="font-display text-lg hover:text-clay-600">${p.name}</a>
+            <p class="text-sm text-ink/50 dark:text-cream/50">${p.brand} · ${p.category}</p>
+          </div>
+          <button data-remove="${p.id}" data-variant-idx="${vIdx}" class="text-ink/40 hover:text-clay-500" aria-label="Remove">✕</button>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-3">
+          <div class="flex items-center rounded-full bg-white dark:bg-[#1d1712] shadow-soft">
+            <button data-dec="${p.id}" data-variant-idx="${vIdx}" class="w-9 h-9 grid place-items-center">−</button>
+            <span class="w-9 text-center font-semibold">${item.qty}</span>
+            <button data-inc="${p.id}" data-variant-idx="${vIdx}" class="w-9 h-9 grid place-items-center">+</button>
+          </div>
+          <span class="font-bold text-lg">${money(p.price * item.qty)}</span>
+        </div>
+      </div>
+    </div>`;
+        })
+        .join("");
+
+      const t = cartTotals();
+      return `
+  <section class="mx-auto max-w-7xl px-4 py-8">
+    <h1 class="font-display text-3xl sm:text-4xl mb-6">Your cart</h1>
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_360px] gap-6 lg:gap-8">
+      <div class="bg-white dark:bg-[#1d1712] rounded-2xl sm:rounded-3xl shadow-soft px-4 sm:px-6">${rows}</div>
+      ${orderSummary(t, "checkout", "Proceed to checkout")}
+    </div>
+  </section>`;
+    }
+
+    function cartTotals() {
+      const sub = State.cart.reduce((s, i) => s + (getCartItemInfo(i)?.price || 0) * i.qty, 0);
+      const ship = sub > 49 || sub === 0 ? 0 : 5.99;
+      const tax = +(sub * 0.08).toFixed(2);
+      return {
+        sub: +sub.toFixed(2),
+        ship,
+        tax,
+        total: +(sub + ship + tax).toFixed(2),
+      };
+    }
+
+    function orderSummary(t, cta, label) {
+      return `<aside class="bg-white dark:bg-[#1d1712] rounded-2xl sm:rounded-3xl shadow-soft p-5 sm:p-6 h-fit lg:sticky lg:top-40 space-y-3">
+    <h2 class="font-display text-2xl mb-2">Order summary</h2>
+    <div class="flex justify-between text-sm"><span class="text-ink/60 dark:text-cream/60">Subtotal</span><span>${money(t.sub)}</span></div>
+    <div class="flex justify-between text-sm"><span class="text-ink/60 dark:text-cream/60">Shipping</span><span>${t.ship === 0 ? "Free" : money(t.ship)}</span></div>
+    <div class="flex justify-between text-sm"><span class="text-ink/60 dark:text-cream/60">Estimated tax</span><span>${money(t.tax)}</span></div>
+    ${t.sub > 0 && t.sub < 49 ? `<p class="text-xs text-clay-600 dark:text-clay-300">Add ${money(49 - t.sub)} more for free shipping 🚚</p>` : ""}
+    <div class="border-t border-black/10 dark:border-white/10 pt-3 flex justify-between font-bold text-lg"><span>Total</span><span>${money(t.total)}</span></div>
+    <div class="flex flex-col sm:flex-row gap-2 pt-1">
+      <input placeholder="Promo code" class="flex-1 rounded-full bg-clay-50 dark:bg-white/5 px-4 py-2 text-sm outline-none" aria-label="Promo code"/>
+      <button class="px-4 py-2 rounded-full bg-clay-100 dark:bg-white/10 text-sm font-medium" onclick="window.__toast&&window.__toast('Promo applied — 5% off!')">Apply</button>
+    </div>
+    <button data-nav="${cta}" class="w-full py-3.5 rounded-full bg-teal-600 text-white font-semibold hover:bg-teal-700 transition mt-2">${label}</button>
+    <button data-nav="shop" class="w-full py-2 text-sm text-ink/60 dark:text-cream/60 hover:text-clay-600">Continue shopping</button>
+  </aside>`;
+    }
+
+    /* ---------- WISHLIST ---------- */
+    function WishlistPage() {
+      if (!State.wishlist.length)
+        return emptyState(
+          "No favourites yet",
+          "Tap the heart on any product to save it here.",
+          "Browse products",
+          "shop",
+          `<img src="assets/fav.png" alt="Wishlist" class="w-56 h-56 mx-auto object-contain animate-float" />`,
+        );
+      const items = State.wishlist.map(byId).filter(Boolean);
+      return `<section class="mx-auto max-w-7xl px-4 py-8">
+    <h1 class="font-display text-3xl sm:text-4xl mb-6">Your wishlist <span class="text-ink/40 dark:text-cream/40 text-xl sm:text-2xl">(${items.length})</span></h1>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">${items.map(productCard).join("")}</div>
+  </section>`;
+    }
+
+    /* LoginPage is loaded from Login.js */
+
+    /* CheckoutPage is loaded from Checkout.js */
+
+    /* ---------- SUCCESS ---------- */
+    function SuccessPage() {
+      const order = "PM-" + Math.floor(100000 + Math.random() * 900000);
+      return `<section class="mx-auto max-w-xl px-4 py-20 text-center">
+    <div class="text-7xl animate-float">🎉</div>
+    <h1 class="font-display text-3xl sm:text-4xl mt-4">Order confirmed!</h1>
+    <p class="text-ink/60 dark:text-cream/60 mt-2">Your pet’s goodies are on the way. A confirmation is headed to your inbox.</p>
+    <div class="bg-white dark:bg-[#1d1712] rounded-2xl sm:rounded-3xl shadow-soft p-5 sm:p-6 mt-8 inline-block">
+      <p class="text-sm text-ink/50 dark:text-cream/50">Order number</p>
+      <p class="font-display text-2xl">${order}</p>
+      <p class="text-sm text-teal-700 dark:text-teal-300 mt-2">Estimated delivery · 2 business days 🚚</p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center mt-8">
+      <button data-nav="shop" class="px-6 py-3 rounded-full bg-teal-600 text-white font-semibold hover:bg-teal-700">Keep shopping</button>
+      <button data-nav="home" class="px-6 py-3 rounded-full bg-clay-100 dark:bg-white/10 font-semibold">Back home</button>
+    </div>
+  </section>`;
+    }
+
+    /* ContactPage is loaded from Contact.js */
+
+    /* AboutPage is loaded from About.js */
+
+    function emptyState(title, sub, cta, route, emoji) {
+      return `<section class="mx-auto max-w-xl px-4 py-24 text-center">
+    <div class="text-7xl">${emoji}</div>
+    <h1 class="font-display text-3xl mt-4">${title}</h1>
+    <p class="text-ink/60 dark:text-cream/60 mt-2">${sub}</p>
+    <button data-nav="${route}" class="mt-6 px-7 py-3 rounded-full bg-teal-600 text-white font-semibold hover:bg-teal-700">${cta}</button>
+  </section>`;
+    }
+
+    function updateActiveNav() {
+      // Update desktop nav
+      $$('header nav > a[data-nav]').forEach(el => {
+        const on = el.dataset.nav === State.route;
+        el.classList.toggle('bg-black/5', on);
+        el.classList.toggle('dark:bg-white/10', on);
+        el.classList.toggle('text-teal-700', on);
+        el.classList.toggle('dark:text-teal-300', on);
+        el.classList.toggle('font-semibold', on);
+      });
+      // Update mobile nav
+      const mobileMenu = $("#mobileMenuPanel");
+      if (mobileMenu) {
+        $$('#mobileNav > a[data-nav]').forEach(el => {
+          const on = el.dataset.nav === State.route;
+          el.classList.toggle('bg-teal-50', on);
+          el.classList.toggle('dark:bg-white/10', on);
+          el.classList.toggle('text-teal-800', on);
+          el.classList.toggle('dark:text-teal-200', on);
+          el.classList.toggle('font-bold', on);
+          el.classList.toggle('font-medium', !on);
+          el.classList.toggle('text-ink', !on);
+          el.classList.toggle('dark:text-cream', !on);
+
+          const iconSpan = el.querySelector("span");
+          if (iconSpan) {
+            iconSpan.classList.toggle('bg-white', on);
+            iconSpan.classList.toggle('dark:bg-[#1a140f]', on);
+            iconSpan.classList.toggle('bg-teal-50', !on);
+            iconSpan.classList.toggle('dark:bg-teal-900/30', !on);
+          }
+        });
+      }
+    }
+
+    /* -------------------------------------------------------------------------
+           6. ROUTER
+           ------------------------------------------------------------------------- */
+    function render(route, opts = {}) {
+      State.route = route;
+      updateActiveNav();
+      if (route === "shop" || route === "home") {
+        app.innerHTML = `<div class="mx-auto max-w-7xl px-4 py-12">${skeletonGrid(8)}</div>`;
+      }
+
+      setTimeout(
+        () => {
+          let html = "";
+          switch (route) {
+            case "home":
+              html = HomePage();
+              break;
+            case "shop":
+              html = ShopPage();
+              break;
+            case "product":
+              html = ProductPage(opts.id);
+              break;
+            case "cart":
+              html = CartPage();
+              break;
+            case "wishlist":
+              html = WishlistPage();
+              break;
+            case "login":
+              html = LoginPage();
+              break;
+            case "checkout":
+              html = CheckoutPage();
+              break;
+            case "success":
+              html = SuccessPage();
+              break;
+            case "contact":
+              html = ContactPage();
+              break;
+            case "about":
+              html = AboutPage();
+              break;
+            case "services":
+              html = ServicesPage();
+              break;
+            default:
+              html = HomePage();
+          }
+          app.innerHTML = html;
+          window.scrollTo({
+            top: 0,
+            behavior: "instant" in window ? "instant" : "auto",
+          });
+          hydrateView();
+          if (route === "home") {
+            initHero();
+            animateCounters();
+          }
+          if (route === "about") {
+            animateCounters();
+          }
+          if (route === "login") {
+            initAuthTabs();
+          }
+          if (route === "services") {
+            if (window.initServicesPage) {
+              window.initServicesPage();
+            }
+          }
+          if (opts.scroll) {
+            setTimeout(() => {
+              const el = $("#" + opts.scroll);
+              el && el.scrollIntoView({ behavior: "smooth" });
+            }, 120);
+          }
+        },
+        route === "shop" || route === "home" ? 220 : 0,
+      );
+    }
+
+    const ROUTES = new Set([
+      "home",
+      "shop",
+      "product",
+      "cart",
+      "wishlist",
+      "login",
+      "checkout",
+      "success",
+      "contact",
+      "about",
+      "services"
+    ]);
+
+    function routeToUrl(route, opts = {}) {
+      const params = new URLSearchParams();
+      if (route === "home") {
+        const hash = opts.scroll ? `#${encodeURIComponent(opts.scroll)}` : "";
+        return `${location.pathname}${hash}`;
+      }
+      if (route === "product" && opts.id) params.set("id", opts.id);
+      if (route === "shop") {
+        if (State.shopFilters.pet !== "all")
+          params.set("pet", State.shopFilters.pet);
+        if (State.shopFilters.category !== "all")
+          params.set("category", State.shopFilters.category);
+        if (State.shopFilters.brand && State.shopFilters.brand !== "all")
+          params.set("brand", State.shopFilters.brand);
+        if (State.shopFilters.q) params.set("q", State.shopFilters.q);
+        if (State.shopFilters.sort !== "popular")
+          params.set("sort", State.shopFilters.sort);
+        if (State.shopFilters.page > 1) params.set("page", State.shopFilters.page);
+      }
+      const query = params.toString();
+      return `${location.pathname}#/${route}${query ? `?${query}` : ""}`;
+    }
+
+    function routeFromUrl() {
+      const raw = location.hash.replace(/^#\/?/, "");
+      const [path = "", query = ""] = raw.split("?");
+      const route = ROUTES.has(path) ? path : "home";
+      const params = new URLSearchParams(query);
+      const opts = {};
+
+      if (route === "product") opts.id = params.get("id");
+      if (route === "shop") {
+        resetShop();
+        State.shopFilters.pet = params.get("pet") || "all";
+        State.shopFilters.category = params.get("category") || "all";
+        State.shopFilters.brand = params.get("brand") || "all";
+        State.shopFilters.q = params.get("q") || "";
+        State.shopFilters.sort = params.get("sort") || "popular";
+        State.shopFilters.page = Math.max(
+          1,
+          parseInt(params.get("page") || "1", 10),
+        );
+      }
+      if (route === "home" && location.hash && !location.hash.startsWith("#/")) {
+        opts.scroll = decodeURIComponent(location.hash.slice(1));
+      }
+      return { route, opts };
+    }
+
+    function navigate(route, opts = {}, replace = false) {
+      const url = routeToUrl(route, opts);
+      if (`${location.pathname}${location.hash}` !== url) {
+        history[replace ? "replaceState" : "pushState"]({ route, opts }, "", url);
+      }
+      render(route, opts);
+    }
+
+    window.addEventListener("popstate", () => {
+      const { route, opts } = routeFromUrl();
+      render(route, opts);
+    });
+
+    /* -------------------------------------------------------------------------
+           7. FEATURES
+           ------------------------------------------------------------------------- */
+    function addToCart(id, qty = 1, variantIdx = 0) {
+      const line = State.cart.find((i) => i.id === id && (i.variantIdx === variantIdx || (!i.variantIdx && variantIdx === 0)));
+      if (line) line.qty += qty;
+      else State.cart.push({ id, qty, variantIdx });
+      updateBadges();
+      renderCartDrawer();
+      const p = byId(id);
+      const variant = p && p.variants && p.variants[variantIdx] ? p.variants[variantIdx] : null;
+      const nameStr = variant ? `${p.name} (${variant.size})` : (p ? p.name : "");
+      toast(`${nameStr} added to cart`);
+      bounce("#cartCount");
+    }
+
+    function removeFromCart(id, variantIdx = 0) {
+      State.cart = State.cart.filter((i) => !(i.id === id && (i.variantIdx === variantIdx || (!i.variantIdx && variantIdx === 0))));
+      updateBadges();
+      renderCartDrawer();
+      if (State.route === "cart") render("cart");
+    }
+
+    function changeQty(id, d, variantIdx = 0) {
+      const line = State.cart.find((i) => i.id === id && (i.variantIdx === variantIdx || (!i.variantIdx && variantIdx === 0)));
+      if (!line) return;
+      line.qty += d;
+      if (line.qty <= 0) return removeFromCart(id, variantIdx);
+      updateBadges();
+      renderCartDrawer();
+      if (State.route === "cart") render("cart");
+    }
+
+    function toggleWish(id) {
+      const i = State.wishlist.indexOf(id);
+      if (i > -1) {
+        State.wishlist.splice(i, 1);
+        toast(`${byId(id).name} removed from wishlist`, "warn");
+      } else {
+        State.wishlist.push(id);
+        toast(`${byId(id).name} saved to wishlist`);
+        bounce("#wishCount");
+      }
+      updateBadges();
+      $$(`[data-wish="${id}"]`).forEach((btn) => {
+        const on = State.wishlist.includes(id);
+        btn.classList.toggle("text-clay-500", on);
+        const svg = btn.querySelector("svg");
+        if (svg) svg.setAttribute("fill", on ? "currentColor" : "none");
+      });
+      if (State.route === "wishlist") render("wishlist");
+    }
+
+    function recordRecentlyViewed(id) {
+      State.recentlyViewed = [
+        id,
+        ...State.recentlyViewed.filter((x) => x !== id),
+      ].slice(0, 8);
+    }
+
+    function updateBadges() {
+      const c = State.cart.reduce((s, i) => s + i.qty, 0);
+      const w = State.wishlist.length;
+      const cc = $("#cartCount"),
+        wc = $("#wishCount");
+      cc.textContent = c;
+      cc.classList.toggle("hidden", c === 0);
+      wc.textContent = w;
+      wc.classList.toggle("hidden", w === 0);
+    }
+
+    function bounce(sel) {
+      const el = $(sel);
+      if (!el) return;
+      el.animate(
+        [
+          { transform: "scale(1)" },
+          { transform: "scale(1.4)" },
+          { transform: "scale(1)" },
+        ],
+        { duration: 350, easing: "ease-out" },
+      );
+    }
+
+    function renderCartDrawer() {
+      const wrap = $("#cartItems"),
+        foot = $("#cartFooter");
+      if (!State.cart.length) {
+        wrap.innerHTML = `<div class="text-center py-16"><div class="text-5xl">🛒</div><p class="font-display text-xl mt-3">Your cart is empty</p><p class="text-sm text-ink/60 dark:text-cream/60">Time to spoil someone furry.</p></div>`;
+        foot.innerHTML = `<button data-close-cart data-nav="shop" class="w-full py-3 rounded-full bg-teal-600 text-white font-semibold">Browse products</button>`;
+        return;
+      }
+      wrap.innerHTML = State.cart
+        .map((item) => {
+          const p = getCartItemInfo(item);
+          if (!p) return "";
+          const vIdx = item.variantIdx || 0;
+          return `<div class="flex gap-3 min-w-0">
+      <img src="${p.image}" alt="${p.name}" class="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-contain bg-clay-50/50 dark:bg-black/20 p-1 shadow-soft"/>
+      <div class="flex-1">
+        <div class="flex justify-between gap-2"><p class="font-medium leading-snug">${p.name}</p><button data-remove="${p.id}" data-variant-idx="${vIdx}" class="text-ink/40 hover:text-clay-500" aria-label="Remove">✕</button></div>
+        <p class="text-sm text-ink/50 dark:text-cream/50">${money(p.price)}</p>
+        <div class="flex flex-wrap items-center justify-between gap-2 mt-2">
+          <div class="flex items-center rounded-full bg-clay-50 dark:bg-white/5">
+            <button data-dec="${p.id}" data-variant-idx="${vIdx}" class="w-8 h-8 grid place-items-center">−</button>
+            <span class="w-8 text-center text-sm font-semibold">${item.qty}</span>
+            <button data-inc="${p.id}" data-variant-idx="${vIdx}" class="w-8 h-8 grid place-items-center">+</button>
+          </div>
+          <span class="font-semibold">${money(p.price * item.qty)}</span>
+        </div>
+      </div>
+    </div>`;
+        })
+        .join("");
+      const t = cartTotals();
+      foot.innerHTML = `
+    <div class="flex justify-between text-sm"><span class="text-ink/60 dark:text-cream/60">Subtotal</span><span class="font-semibold">${money(t.sub)}</span></div>
+    <div class="flex justify-between text-sm"><span class="text-ink/60 dark:text-cream/60">Shipping</span><span>${t.ship === 0 ? "Free" : money(t.ship)}</span></div>
+    <button data-close-cart data-nav="cart" class="w-full py-3 rounded-full bg-clay-100 dark:bg-white/10 font-semibold">View cart</button>
+    <button data-close-cart data-nav="checkout" class="w-full py-3 rounded-full bg-teal-600 text-white font-semibold">Checkout · ${money(t.total)}</button>`;
+    }
+
+    function openQuick(id) {
+      const p = byId(id);
+      if (!p) return;
+      const inWish = State.wishlist.includes(id);
+      $("#quickContent").innerHTML = `
+    <button data-close-quick class="absolute top-4 right-4 w-9 h-9 grid place-items-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 z-10" aria-label="Close">✕</button>
+    <div class="grid sm:grid-cols-2 gap-5 sm:gap-6 p-4 sm:p-6">
+      <img src="${p.image}" alt="${p.name}" class="w-full max-h-72 sm:max-h-[400px] object-contain rounded-2xl sm:rounded-3xl bg-[#fcf8f2] dark:bg-black/20 p-4 shadow-soft"/>
+      <div>
+        <span class="text-xs font-semibold text-teal-700 dark:text-teal-300 uppercase tracking-wide">${p.brand} · ${p.category}</span>
+        <h2 class="font-display text-2xl mt-1">${p.name}</h2>
+        <div class="flex items-center gap-2 mt-2">${stars(p.rating)}<span class="text-sm text-ink/60 dark:text-cream/60">(${p.reviews})</span></div>
+        <div class="flex flex-wrap items-end gap-2 mt-3"><span class="price-value font-display text-2xl sm:text-3xl">${money(p.price)}</span>${p.discount ? `<span class="line-through text-ink/40">${money(p.mrp)}</span>` : ""}</div>
+        <p class="text-sm text-ink/70 dark:text-cream/70 mt-3">${p.desc}</p>
+        <!-- Variants Selector -->
+        ${p.variants && p.variants.length > 0 ? `
+        <div class="mt-3 border-t border-black/5 dark:border-white/5 pt-3">
+          <label class="text-[10px] font-semibold text-ink/75 dark:text-cream/75 uppercase tracking-widest font-display">Select Packaging / Size</label>
+          <div class="flex flex-wrap gap-2 mt-1.5" id="quickVariantSelectContainer">
+            ${p.variants.map((v, idx) => `
+              <button data-variant-idx="${idx}" data-product-id="${p.id}" class="variant-pill px-3 py-1.5 rounded-full border text-xs font-medium transition ${idx === 0 ? "border-teal-600 bg-teal-50 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300" : "border-black/10 dark:border-white/10 hover:border-teal-600 text-ink/70 dark:text-cream/70"}">
+                ${v.size} (${money(v.price)})
+              </button>
+            `).join("")}
+          </div>
+        </div>
+        ` : ""}
+        <div class="flex gap-2 mt-5">
+          <button data-add="${p.id}" class="flex-1 py-3 rounded-full bg-teal-600 text-white font-semibold hover:bg-teal-700">Add to cart</button>
+          <button data-wish="${p.id}" class="w-12 h-12 grid place-items-center rounded-full bg-clay-50 dark:bg-white/10 ${inWish ? "text-clay-500" : ""}" aria-label="Wishlist"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="${inWish ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2"><path d="M19 14c1.5-1.5 3-3.4 3-5.5A3.5 3.5 0 0 0 15.5 6L12 9.5 8.5 6A3.5 3.5 0 0 0 2 8.5C2 10.6 3.5 12.5 5 14l7 7Z"/></svg></button>
+        </div>
+        <button data-close-quick data-nav="product" data-id="${p.id}" class="mt-3 text-sm text-teal-700 dark:text-teal-300 hover:underline">View full details →</button>
+      </div>
+    </div>`;
+      openOverlay("#quickModal");
+    }
+
+    /* ---------- ENHANCED HERO CAROUSEL with REAL IMAGES ---------- */
+    let heroIndex = 0,
+      heroTimer = null;
+
+    function initHero() {
+      const track = $("#heroTrack"),
+        dots = $("#heroDots");
+      if (!track) return;
+
+      track.innerHTML = HERO_SLIDES.map(
+        (s, i) => `
+    <div class="hero-slide ${i === 0 ? "active" : "inactive"}" data-index="${i}">
+      <img src="${s.image}" alt="${s.alt}" class="bg-image absolute inset-0 w-full h-full object-cover" />
+      <div class="hero-overlay"></div>
+      <div class="relative z-10 h-full grid lg:grid-cols-2 items-center gap-6 p-5 sm:p-8 lg:p-12">
+        <div class="hero-content text-ink dark:text-cream">
+          <p class="uppercase tracking-widest text-xs font-bold text-clay-700 dark:text-clay-300">${s.eyebrow}</p>
+          <h1 class="font-display text-3xl sm:text-5xl lg:text-6xl mt-3 leading-[1.08] drop-shadow-sm">${s.title}</h1>
+          <p class="text-ink/80 dark:text-cream/80 mt-4 max-w-md text-base sm:text-lg drop-shadow-sm">${s.sub}</p>
+          <div class="flex flex-col sm:flex-row sm:flex-wrap gap-3 mt-7">
+            <button data-nav="shop" class="w-full sm:w-auto px-7 py-3.5 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink font-semibold hover:scale-105 transition shadow-lg">${s.cta}</button>
+            <button data-nav="services" class="w-full sm:w-auto px-7 py-3.5 rounded-full text-white bg-teal-700 backdrop-blur font-semibold hover:bg-white hover:text-teal-700 hover:scale-105 transition shadow-lg">Explore services</button>
+          </div>
+        </div>
+        <div class="hidden lg:flex items-center justify-center">
+          <div class="relative w-64 h-64 rounded-full overflow-hidden ring-4 ring-white/30 shadow-2xl">
+            <img src="${s.image}" alt="${s.alt}" class="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+    </div>`,
+      ).join("");
+
+      dots.innerHTML = HERO_SLIDES.map(
+        (_, i) =>
+          `<button data-hero="${i}" class="hero-dot ${i === 0 ? "active" : "inactive"}" aria-label="Slide ${i + 1}"></button>`,
+      ).join("");
+
+      heroIndex = 0;
+      startHero();
+    }
+
+    function showHero(i) {
+      const slides = $$(".hero-slide"),
+        dots = $$(".hero-dot");
+      if (!slides.length) return;
+      heroIndex = (i + slides.length) % slides.length;
+      slides.forEach((s, idx) => {
+        const on = idx === heroIndex;
+        s.classList.toggle("active", on);
+        s.classList.toggle("inactive", !on);
+      });
+      dots.forEach((d, idx) => {
+        const on = idx === heroIndex;
+        d.classList.toggle("active", on);
+        d.classList.toggle("inactive", !on);
+      });
+    }
+
+    function startHero() {
+      clearInterval(heroTimer);
+      heroTimer = setInterval(() => showHero(heroIndex + 1), 5000);
+    }
+
+    /* ---------- COUNTERS ---------- */
+    function animateCounters() {
+      $$(".counter").forEach((el) => {
+        const raw = el.dataset.target;
+        const num = parseFloat(raw.replace(/[^0-9.]/g, ""));
+        if (isNaN(num)) {
+          return;
+        }
+        const suffix = raw.replace(/[0-9.,]/g, "");
+        const prefix = raw.startsWith("₹") ? "₹" : "";
+        let cur = 0;
+        const step = num / 40;
+        const tick = () => {
+          cur += step;
+          if (cur >= num) {
+            el.textContent = raw;
+          } else {
+            el.textContent =
+              prefix + Math.floor(cur).toLocaleString() + suffix.replace("₹", "");
+            requestAnimationFrame(tick);
+          }
+        };
+        const io = new IntersectionObserver((e, o) => {
+          if (e[0].isIntersecting) {
+            tick();
+            o.disconnect();
+          }
+        });
+        io.observe(el);
+      });
+    }
+
+    /* ---------- AUTH TABS ---------- */
+    function initAuthTabs() {
+      $$(".auth-tab").forEach((t) =>
+        t.addEventListener("click", () => {
+          const mode = t.dataset.auth,
+            reg = mode === "register";
+          $$(".auth-tab").forEach((x) => {
+            const on = x === t;
+            x.classList.toggle("bg-white", on);
+            x.classList.toggle("dark:bg-[#2a221c]", on);
+            x.classList.toggle("shadow-soft", on);
+          });
+          $("#nameField").classList.toggle("hidden", !reg);
+          $("#authTitle").textContent = reg
+            ? "Create your account"
+            : "Welcome back";
+          $("#authSub").textContent = reg
+            ? "Join the pack and start earning paw points."
+            : "Log in to track orders and reorder fast.";
+          $("#authSubmit").textContent = reg ? "Create account" : "Log in";
+        }),
+      );
+    }
+
+    /* ---------- OVERLAYS ---------- */
+    function openOverlay(sel) {
+      const o = $(sel);
+      o.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+      const panel = o.querySelector("#cartPanel,#mobileMenuPanel");
+      if (panel) {
+        requestAnimationFrame(() =>
+          panel.classList.remove("translate-x-full", "translate-x-[-100%]"),
+        );
+      }
+    }
+
+    function closeOverlay(sel) {
+      const o = $(sel);
+      const panel = o.querySelector("#cartPanel,#mobileMenuPanel");
+      if (panel) {
+        panel.classList.add(
+          sel === "#cartDrawer" ? "translate-x-full" : "translate-x-[-100%]",
+        );
+        setTimeout(() => {
+          o.classList.add("hidden");
+        }, 280);
+      } else o.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    /* -------------------------------------------------------------------------
+           8. GLOBAL EVENTS
+           ------------------------------------------------------------------------- */
+    window.__toast = toast;
+
+    document.addEventListener("click", (e) => {
+      const t = e.target.closest(
+        "[data-nav],[data-add],[data-add-qty],[data-add-bundle],[data-wish],[data-quick],[data-remove],[data-inc],[data-dec],[data-filter],[data-page],[data-slide],[data-gallery],[data-hero],[data-book],[data-scroll],[data-close-cart],[data-close-quick],[data-close-menu],.variant-pill",
+      );
+      if (!t) return;
+
+      if (t.classList.contains("variant-pill")) {
+        const idx = parseInt(t.dataset.variantIdx, 10);
+        const pid = t.dataset.productId;
+        const p = byId(pid);
+        if (p && p.variants && p.variants[idx]) {
+          const selectedVar = p.variants[idx];
+          const gridWrapper = t.closest(".grid") || t.closest("section");
+          // Update main gallery image
+          const galleryMain = $("#galleryMain") || gridWrapper.querySelector("img");
+          if (galleryMain) galleryMain.src = selectedVar.imageUrl;
+
+          // Update price display
+          const priceDisplay = gridWrapper.querySelector(".price-value");
+          if (priceDisplay) priceDisplay.textContent = money(selectedVar.price);
+
+          // Update active styling of variant pills
+          t.parentElement.querySelectorAll(".variant-pill").forEach(el => {
+            el.classList.remove("border-teal-600", "bg-teal-50", "text-teal-800", "dark:bg-teal-900/30", "dark:text-teal-300");
+            el.classList.add("border-black/10", "dark:border-white/10", "text-ink/70", "dark:text-cream/70");
+          });
+          t.classList.add("border-teal-600", "bg-teal-50", "text-teal-800", "dark:bg-teal-900/30", "dark:text-teal-300");
+          t.classList.remove("border-black/10", "dark:border-white/10", "text-ink/70", "dark:text-cream/70");
+
+          // Update active styling of thumbnails
+          $$(".thumb").forEach((th) => {
+            const isMatch = th.dataset.gallery === selectedVar.imageUrl;
+            th.classList.toggle("ring-teal-600", isMatch);
+            th.classList.toggle("ring-transparent", !isMatch);
+          });
+        }
+        return;
+      }
+
+      if (t.hasAttribute("data-nav")) {
+        const route = t.dataset.nav;
+        if (route === "__placeorder") {
+          e.preventDefault();
+          placeOrder();
+          return;
+        }
+        e.preventDefault();
+        const opts = {};
+        if (t.dataset.id) opts.id = t.dataset.id;
+        if (t.dataset.scroll) opts.scroll = t.dataset.scroll;
+        if (t.dataset.shopPet) {
+          resetShop();
+          State.shopFilters.pet = t.dataset.shopPet;
+          navigate("shop");
+          closeAll();
+          return;
+        }
+        if (t.dataset.shopCat) {
+          resetShop();
+          State.shopFilters.category = t.dataset.shopCat;
+          navigate("shop");
+          closeAll();
+          return;
+        }
+        if (t.dataset.shopBrand) {
+          resetShop();
+          State.shopFilters.brand = t.dataset.shopBrand;
+          navigate("shop");
+          closeAll();
+          return;
+        }
+        navigate(route, opts);
+        closeAll();
+        return;
+      }
+      if (t.dataset.add) {
+        const gridWrapper = t.closest(".grid") || t.closest("article");
+        const activePill = gridWrapper ? gridWrapper.querySelector(".variant-pill.border-teal-600") : null;
+        const idx = activePill ? parseInt(activePill.dataset.variantIdx, 10) : 0;
+        addToCart(t.dataset.add, 1, idx);
+        return;
+      }
+      if (t.dataset.addQty) {
+        const q = parseInt($("#qtyVal")?.textContent || "1", 10);
+        const gridWrapper = t.closest("section") || t.closest(".grid");
+        const activePill = gridWrapper ? gridWrapper.querySelector(".variant-pill.border-teal-600") : null;
+        const idx = activePill ? parseInt(activePill.dataset.variantIdx, 10) : 0;
+        addToCart(t.dataset.addQty, q, idx);
+        return;
+      }
+      if (t.dataset.addBundle) {
+        t.dataset.addBundle.split(",").forEach((id) => addToCart(id, 1, 0));
+        return;
+      }
+      if (t.dataset.wish) {
+        toggleWish(t.dataset.wish);
+        return;
+      }
+      if (t.dataset.quick) {
+        openQuick(t.dataset.quick);
+        return;
+      }
+      if (t.dataset.remove) {
+        const vIdx = t.dataset.variantIdx !== undefined ? parseInt(t.dataset.variantIdx, 10) : 0;
+        removeFromCart(t.dataset.remove, vIdx);
+        return;
+      }
+      if (t.dataset.inc) {
+        const vIdx = t.dataset.variantIdx !== undefined ? parseInt(t.dataset.variantIdx, 10) : 0;
+        changeQty(t.dataset.inc, 1, vIdx);
+        return;
+      }
+      if (t.dataset.dec) {
+        const vIdx = t.dataset.variantIdx !== undefined ? parseInt(t.dataset.variantIdx, 10) : 0;
+        changeQty(t.dataset.dec, -1, vIdx);
+        return;
+      }
+      if (t.dataset.filter) {
+        const [key, val] = t.dataset.filter.split(":");
+        if (key === "reset") {
+          resetShop();
+        } else {
+          State.shopFilters[key] = val;
+          State.shopFilters.page = 1;
+        }
+        navigate("shop");
+        return;
+      }
+      if (t.dataset.page) {
+        State.shopFilters.page = parseInt(t.dataset.page, 10);
+        navigate("shop");
+        $("#app").scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+      if (t.dataset.slide) {
+        const [sel, dir] = t.dataset.slide.split(":");
+        const el = $("#" + sel);
+        if (el)
+          el.scrollBy({
+            left: parseInt(dir, 10) * Math.min(el.clientWidth * 0.8, 340),
+            behavior: "smooth",
+          });
+        return;
+      }
+      if (t.dataset.gallery) {
+        $("#galleryMain").src = t.dataset.gallery;
+        $$(".thumb").forEach((th) =>
+          th.classList.toggle(
+            "ring-teal-600",
+            th.dataset.gallery === t.dataset.gallery,
+          ),
+        );
+        $$(".thumb").forEach((th) =>
+          th.classList.toggle(
+            "ring-transparent",
+            th.dataset.gallery !== t.dataset.gallery,
+          ),
+        );
+
+        // Working vice versa: find corresponding variant pill for this image and activate it
+        const productSec = t.closest("section") || t.closest(".grid") || document;
+        const variantPills = productSec.querySelectorAll(".variant-pill");
+        let matchedPill = null;
+        for (const pill of variantPills) {
+          const idx = parseInt(pill.dataset.variantIdx, 10);
+          const pid = pill.dataset.productId;
+          const p = byId(pid);
+          if (p && p.variants && p.variants[idx] && p.variants[idx].imageUrl === t.dataset.gallery) {
+            matchedPill = pill;
+            break;
+          }
+        }
+        if (matchedPill) {
+          const idx = parseInt(matchedPill.dataset.variantIdx, 10);
+          const pid = matchedPill.dataset.productId;
+          const p = byId(pid);
+          const selectedVar = p.variants[idx];
+          const gridWrapper = matchedPill.closest(".grid") || matchedPill.closest("section");
+
+          // Update price display
+          const priceDisplay = gridWrapper.querySelector(".price-value");
+          if (priceDisplay) priceDisplay.textContent = money(selectedVar.price);
+
+          // Update active styling of variant pills
+          matchedPill.parentElement.querySelectorAll(".variant-pill").forEach(el => {
+            el.classList.remove("border-teal-600", "bg-teal-50", "text-teal-800", "dark:bg-teal-900/30", "dark:text-teal-300");
+            el.classList.add("border-black/10", "dark:border-white/10", "text-ink/70", "dark:text-cream/70");
+          });
+          matchedPill.classList.add("border-teal-600", "bg-teal-50", "text-teal-800", "dark:bg-teal-900/30", "dark:text-teal-300");
+          matchedPill.classList.remove("border-black/10", "dark:border-white/10", "text-ink/70", "dark:text-cream/70");
+        }
+        return;
+      }
+      if (t.dataset.hero !== undefined) {
+        showHero(parseInt(t.dataset.hero, 10));
+        startHero();
+        return;
+      }
+      if (t.dataset.book) {
+        toast(`${t.dataset.book} — request sent! Our team will confirm shortly.`);
+        return;
+      }
+      if (t.hasAttribute("data-close-cart")) {
+        closeOverlay("#cartDrawer");
+      }
+      if (t.hasAttribute("data-close-quick")) {
+        closeOverlay("#quickModal");
+      }
+      if (t.hasAttribute("data-close-menu")) {
+        closeOverlay("#mobileMenu");
+      }
+    });
+
+    function resetShop() {
+      State.shopFilters = {
+        pet: "all",
+        category: "all",
+        brand: "all",
+        sort: "popular",
+        q: "",
+        page: 1,
+      };
+    }
+
+    function closeAll() {
+      ["#mobileMenu", "#cartDrawer", "#quickModal"].forEach((s) => {
+        if (!$(s).classList.contains("hidden")) closeOverlay(s);
+      });
+    }
+
+    function placeOrder() {
+      toast("Processing your order…", "info");
+      setTimeout(() => {
+        State.cart = [];
+        updateBadges();
+        renderCartDrawer();
+        navigate("success");
+      }, 900);
+    }
+
+    document.addEventListener("change", (e) => {
+      if (e.target.id === "sortSelect") {
+        State.shopFilters.sort = e.target.value;
+        State.shopFilters.page = 1;
+        navigate("shop");
+      }
+    });
+
+    document.addEventListener("submit", (e) => {
+      if (e.target.id === "authForm") {
+        e.preventDefault();
+        toast("Signed in — welcome to the pack! 🐾");
+        setTimeout(() => navigate("home"), 700);
+      }
+      if (e.target.id === "contactForm") {
+        e.preventDefault();
+        e.target.reset();
+        toast("Message sent! We’ll reply within hours.");
+      }
+      if (e.target.id === "checkoutForm") {
+        e.preventDefault();
+        placeOrder();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (e.target.id === "newsBtn") {
+        const email = $("#newsEmail").value.trim();
+        if (/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+          $("#newsEmail").value = "";
+          toast("Subscribed! Watch your inbox for treats.");
+        } else toast("Please enter a valid email", "warn");
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (e.target.id === "qtyPlus" || e.target.id === "qtyMinus") {
+        const v = $("#qtyVal");
+        let n = parseInt(v.textContent, 10);
+        n += e.target.id === "qtyPlus" ? 1 : -1;
+        if (n < 1) n = 1;
+        v.textContent = n;
+      }
+    });
+
+    /* ---------- SEARCH ---------- */
+    function runSearchSuggest(q) {
+      const box = $("#searchSuggest");
+      if (!q.trim()) {
+        box.classList.add("hidden");
+        return;
+      }
+      const res = PRODUCTS.filter((p) =>
+        (p.name + p.brand + p.category).toLowerCase().includes(q.toLowerCase()),
+      ).slice(0, 6);
+      if (!res.length) {
+        box.innerHTML = `<p class="px-3 py-3 text-sm text-ink/50">No products match “${q}”.</p>`;
+        box.classList.remove("hidden");
+        return;
+      }
+      box.innerHTML = res
+        .map(
+          (p) =>
+            `<button data-nav="product" data-id="${p.id}" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-clay-50 dark:hover:bg-white/5 text-left">
+    <img src="${p.image}" class="w-10 h-10 rounded-lg object-contain bg-clay-50/50 dark:bg-black/20 p-0.5" alt=""/>
+    <span class="flex-1"><span class="block text-sm font-medium">${p.name}</span><span class="block text-xs text-ink/50">${p.category}</span></span>
+    <span class="text-sm font-semibold">${money(p.price)}</span></button>`,
+        )
+        .join("");
+      box.classList.remove("hidden");
+    }
+
+    document.addEventListener("input", (e) => {
+      if (e.target.id === "searchInput") runSearchSuggest(e.target.value);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.target.id === "searchInput" && e.key === "Enter") {
+        resetShop();
+        State.shopFilters.q = e.target.value;
+        navigate("shop");
+        $("#searchSuggest").classList.add("hidden");
+      }
+      if (e.key === "Escape") closeAll();
+    });
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#searchSuggest,#searchInput"))
+        $("#searchSuggest")?.classList.add("hidden");
+    });
+
+    /* -------------------------------------------------------------------------
+           9. HEADER BEHAVIOR
+           ------------------------------------------------------------------------- */
+
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        const sc = window.scrollY;
+        const header = $("#header");
+        if (header) {
+          header.classList.toggle("shadow-lift", sc > 10);
+          header.classList.toggle("bg-white/70", sc > 10);
+          header.classList.toggle("dark:bg-[#1d1712]/70", sc > 10);
+          header.classList.toggle("backdrop-blur-md", sc > 10);
+          header.classList.toggle("bg-white", sc <= 10);
+          header.classList.toggle("dark:bg-[#1d1712]", sc <= 10);
+        }
+        const bt = $("#backTop");
+        if (bt) {
+          bt.classList.toggle("opacity-0", sc < 400);
+          bt.classList.toggle("pointer-events-none", sc < 400);
+        }
+      },
+      { passive: true }
+    );
+    $("#backTop")?.addEventListener("click", () =>
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    );
+
+    $("#cartBtn").addEventListener("click", () => {
+      renderCartDrawer();
+      openOverlay("#cartDrawer");
+    });
+    $("#wishlistBtn").addEventListener("click", () => navigate("wishlist"));
+
+    $("#hamburger").addEventListener("click", () => {
+      $("#mobileNav").innerHTML = buildMobileNav();
+      updateActiveNav();
+      openOverlay("#mobileMenu");
+      $("#hamburger").setAttribute("aria-expanded", "true");
+    });
+
+    function buildMobileNav() {
+      const link = (label, attrs, iconHtml) =>
+        `<a href="#" ${attrs} class="group flex items-center justify-between px-4 py-3 sm:py-3.5 rounded-[1.25rem] hover:bg-white dark:hover:bg-white/10 hover:shadow-sm transition-all duration-300" data-close-menu>
+          <div class="flex items-center gap-4">
+            <span class="grid place-items-center w-10 h-10 rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 shadow-sm group-hover:scale-110 group-active:scale-95 transition-all duration-300">
+              ${iconHtml}
+            </span>
+            <span class="font-semibold text-base inline-block transition-transform duration-300 group-hover:translate-x-1">${label}</span>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-teal-600 dark:text-teal-400"></i>
+        </a>`;
+
+      return `
+    <div class="relative mb-5 group">
+      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-transform duration-300 group-focus-within:scale-110 group-focus-within:translate-x-0.5">
+        <svg class="w-5 h-5 text-ink/40 dark:text-cream/40 group-focus-within:text-teal-600 dark:group-focus-within:text-teal-400 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      </div>
+      <input id="searchInputMobile" type="search" placeholder="Find treats, toys..." class="w-full rounded-2xl bg-white/80 dark:bg-white/5 border border-transparent shadow-sm backdrop-blur-sm pl-11 pr-4 py-3 text-sm outline-none focus:border-teal-500/30 focus:bg-white dark:focus:bg-white/10 focus:ring-4 focus:ring-teal-500/10 transition-all duration-300 hover:shadow-md"/>
+    </div>
+    
+    <div class="space-y-0.5 flex-1 relative z-10">
+      ${link('Home', 'data-nav="home"', '<i class="fa-solid fa-house text-sm"></i>')}
+      ${link('Shop', 'data-nav="shop"', '<i class="fa-solid fa-shop text-sm"></i>')}
+      
+      <details class="group/brands overflow-hidden focus:outline-none rounded-[1.25rem] transition-colors duration-300 open:bg-white/50 dark:open:bg-white/5">
+        <summary class="flex items-center justify-between px-4 py-3 sm:py-3.5 cursor-pointer list-none hover:bg-white dark:hover:bg-white/10 hover:shadow-sm rounded-[1.25rem] transition-all duration-300 [&::-webkit-details-marker]:hidden focus:outline-none">
+          <div class="flex items-center gap-4">
+            <span class="grid place-items-center w-10 h-10 rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 shadow-sm group-hover/brands:scale-110 transition-all duration-300">
+              <i class="fa-solid fa-tags text-sm"></i>
+            </span>
+            <span class="font-semibold text-base text-ink dark:text-cream transition-transform duration-300 group-hover/brands:translate-x-1">All Brands</span>
+          </div>
+          <svg class="w-5 h-5 text-ink/40 transition-transform duration-300 group-open/brands:rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+        </summary>
+        <div class="px-4 pb-4 pt-1 animate-fadeUp">
+          <div class="grid grid-cols-2 gap-2">
+            ${BRANDS.map(b => `<a href="#" data-nav="shop" data-shop-brand="${b}" class="block px-4 py-3 text-sm font-semibold bg-white/80 dark:bg-black/20 border border-transparent rounded-[1rem] hover:bg-white dark:hover:bg-black/40 hover:border-teal-500/30 hover:text-teal-700 dark:hover:text-teal-300 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-center" data-close-menu>${b}</a>`).join("")}
+          </div>
+        </div>
+      </details>
+
+      ${link('Services', 'data-nav="services"', '<i class="fa-solid fa-stethoscope text-sm"></i>')}
+      ${link('About us', 'data-nav="about"', '<i class="fa-solid fa-info-circle text-sm"></i>')}
+      ${link('Contact us', 'data-nav="contact"', '<i class="fa-solid fa-envelope text-sm"></i>')}
+    </div>
+    
+    <div class="mt-10 mb-4 relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-teal-500 to-teal-700 p-8 shadow-xl shadow-teal-900/20 group">
+      <div class="absolute -right-4 -top-4 text-white/10 transition-transform duration-700 group-hover:rotate-12 group-hover:scale-110">
+        <i class="fa-solid fa-paw text-[8rem]"></i>
+      </div>
+      <div class="relative z-10">
+        <p class="text-white/80 text-[10px] font-bold uppercase tracking-[0.25em] mb-2">Need help?</p>
+        <h4 class="text-white font-display text-3xl leading-tight mb-6">Talk to an<br/>expert</h4>
+        <a href="tel:+918087426569" class="inline-flex items-center gap-3 bg-white text-teal-800 hover:bg-clay-50 px-6 py-3.5 rounded-full text-sm font-bold shadow-sm transition-transform hover:scale-105 active:scale-95">
+          <i class="fa-solid fa-phone"></i>
+          080874 26569
+        </a>
+        <p class="text-sm text-teal-100/90 mt-5 flex items-center gap-2"><i class="fa-solid fa-clock"></i> 9 AM - 9 PM, Daily</p>
+      </div>
+    </div>`;
+    }
+    $("#hamburger").addEventListener("click", () =>
+      setTimeout(() => {
+        const m = $("#searchInputMobile");
+        m &&
+          m.addEventListener("keydown", (ev) => {
+            if (ev.key === "Enter") {
+              resetShop();
+              State.shopFilters.q = m.value;
+              navigate("shop");
+              closeAll();
+            }
+          });
+      }, 50),
+    );
+
+    $("#searchMobileBtn").addEventListener("click", () => {
+      $("#hamburger").click();
+    });
+
+    /* -------------------------------------------------------------------------
+           10. BUILD CHROME & INIT
+           ------------------------------------------------------------------------- */
+    function buildChrome() {
+      $("#catDropdown").innerHTML = BRANDS.map(
+        (b) =>
+          `< a href = "#" data - nav="shop" data - shop - brand="${b}" class="block px-3 py-2 rounded-xl hover:bg-clay-50 dark:hover:bg-white/5 text-sm" > ${b}</a > `,
+      ).join("");
+      $("#footerCats").innerHTML = CATEGORIES.slice(0, 6)
+        .map(
+          (c) =>
+            `< li > <a class="hover:text-clay-300" href="#" data-nav="shop" data-shop-cat="${c}">${c}</a></li > `,
+        )
+        .join("");
+    }
+
+    function init() {
+      buildChrome();
+      updateBadges();
+      renderCartDrawer();
+      const { route, opts } = routeFromUrl();
+      navigate(route, opts, true);
+      setTimeout(() => {
+        const l = $("#pageLoader");
+        l.style.opacity = "0";
+        l.style.transition = "opacity .4s";
+        setTimeout(() => l.remove(), 400);
+      }, 600);
+
+      // Fetch brands from database
+      db.collection("brands").orderBy("createdAt", "desc").get()
+        .then((snapshot) => {
+          if (!snapshot.empty) {
+            const loadedBrands = [];
+            const loadedBrandObjs = [];
+            snapshot.forEach((doc) => {
+              const data = doc.data();
+              if (data.name) {
+                loadedBrands.push(data.name);
+                loadedBrandObjs.push({ name: data.name, logoUrl: data.logoUrl });
+              }
+            });
+            if (loadedBrands.length > 0) {
+              BRANDS = loadedBrands;
+              BRAND_OBJS = loadedBrandObjs;
+              buildChrome();
+              if (State.route === "shop") {
+                render("shop");
+              } else if (State.route === "home") {
+                render("home");
+              }
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Firestore Error, attempting fallback load:", error);
+          db.collection("brands").get()
+            .then((snapshot) => {
+              if (!snapshot.empty) {
+                const loadedBrands = [];
+                const loadedBrandObjs = [];
+                snapshot.forEach((doc) => {
+                  const data = doc.data();
+                  if (data.name) {
+                    loadedBrands.push(data.name);
+                    loadedBrandObjs.push({ name: data.name, logoUrl: data.logoUrl });
+                  }
+                });
+                if (loadedBrands.length > 0) {
+                  BRANDS = loadedBrands;
+                  BRAND_OBJS = loadedBrandObjs;
+                  buildChrome();
+                  if (State.route === "shop") {
+                    render("shop");
+                  } else if (State.route === "home") {
+                    render("home");
+                  }
+                }
+              }
+            })
+            .catch((err) => console.error("Database query failed completely:", err));
+        });
+
+      function mapFirestoreProduct(doc) {
+        const data = doc.data();
+        const variants = data.variants || [];
+        const defaultVar = variants[0] || { price: 0, imageUrl: "assets/logo.png", size: "Standard" };
+        const tags = [];
+        if (data.vetSupport) tags.push("vet");
+        if (data.reviews > 1000) tags.push("bestseller");
+        const gallery = variants.map(v => v.imageUrl).filter(Boolean);
+        if (gallery.length === 0) gallery.push(defaultVar.imageUrl);
+        return {
+          id: doc.id,
+          name: data.name || "Unnamed Product",
+          category: data.category || "General",
+          subCategory: data.subCategory || "",
+          pet: data.pet || "other",
+          price: defaultVar.price,
+          mrp: defaultVar.price,
+          rating: data.rating !== undefined ? data.rating : 5.0,
+          reviews: data.reviews !== undefined ? data.reviews : 0,
+          brand: data.brand || "Samruddhi",
+          tags: tags,
+          discount: 0,
+          image: defaultVar.imageUrl,
+          gallery: gallery,
+          desc: data.description || `Premium product curated for your pets.Vet - formulated and ethically sourced.`,
+          stock: data.stock !== undefined ? data.stock : 10,
+          variants: variants,
+          freeShipping: data.freeShipping !== undefined ? data.freeShipping : true,
+          returnPolicy: data.returnPolicy !== undefined ? data.returnPolicy : true,
+          vetSupport: data.vetSupport !== undefined ? data.vetSupport : false
+        };
+      }
+
+      // Fetch products from database
+      db.collection("products").orderBy("createdAt", "desc").get()
+        .then((snapshot) => {
+          if (!snapshot.empty) {
+            const loadedProducts = [];
+            snapshot.forEach((doc) => {
+              loadedProducts.push(mapFirestoreProduct(doc));
+            });
+            if (loadedProducts.length > 0) {
+              PRODUCTS = loadedProducts;
+              if (State.route === "shop" || State.route === "home" || State.route === "product") {
+                const curOpts = routeFromUrl().opts;
+                render(State.route, curOpts);
+              }
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Firestore Products Error, attempting fallback load:", error);
+          db.collection("products").get()
+            .then((snapshot) => {
+              if (!snapshot.empty) {
+                const loadedProducts = [];
+                snapshot.forEach((doc) => {
+                  loadedProducts.push(mapFirestoreProduct(doc));
+                });
+                if (loadedProducts.length > 0) {
+                  PRODUCTS = loadedProducts;
+                  if (State.route === "shop" || State.route === "home" || State.route === "product") {
+                    const curOpts = routeFromUrl().opts;
+                    render(State.route, curOpts);
+                  }
+                }
+              }
+            })
+            .catch((err) => console.error("Database product query failed completely:", err));
+        });
+    }
+    document.addEventListener("DOMContentLoaded", init);
+
+  </script>
+</body>
+
+</html>
