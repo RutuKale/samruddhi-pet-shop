@@ -1,7 +1,6 @@
 function HomePage() {
   const featured = PRODUCTS.slice(0, 8);
   const bestsellers = PRODUCTS.filter((p) => p.tags.includes("bestseller"));
-  const healthcare = PRODUCTS.filter((p) => p.category === "Healthcare");
 
   return `
   <!-- ENHANCED HERO with REAL IMAGES -->
@@ -247,28 +246,6 @@ function HomePage() {
     <div class="text-center mt-8"><button data-nav="shop" class="px-7 py-3 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink font-semibold hover:opacity-90">View all products</button></div>
   </section>
 
-  <!-- HEALTHCARE -->
-  <section class="mx-auto max-w-8xl px-4 py-12">
-    ${sectionHead("Pharmacy", "Pet healthcare, vet-approved", "Medicines, supplements and recommended products you can trust.")}
-    <div class="reveal grid sm:grid-cols-3 gap-4 mb-8">
-      ${[
-      ["💊", "Medicines", "Prescription & OTC, dispatched fast"],
-      ["🌿", "Supplements", "Joint, skin, gut & calming support"],
-      ["🩺", "Vet recommended", "Curated by our in-house veterinarians"],
-    ]
-      .map(
-        ([
-          e,
-          t,
-          d,
-        ]) => `<div class="rounded-3xl p-6 bg-teal-50 dark:bg-teal-900/30 shadow-soft">
-          <div class="text-3xl">${e}</div><h3 class="font-display text-xl mt-2">${t}</h3>
-          <p class="text-sm text-ink/60 dark:text-cream/60 mt-1">${d}</p></div>`,
-      )
-      .join("")}
-    </div>
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">${healthcare.slice(0, 4).map(productCard).join("")}</div>
-  </section>
 
   <!-- BRANDS -->
   <section class="py-12 sm:py-16 border-y border-black/5 dark:border-white/10 bg-clay-50/30 dark:bg-[#1a140f]/50">

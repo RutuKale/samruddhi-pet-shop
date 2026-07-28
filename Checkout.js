@@ -125,24 +125,30 @@ function CheckoutPage() {
             <i class="fa-solid fa-truck-fast text-teal-600"></i> Contact & shipping
           </h2>
           <div class="grid sm:grid-cols-2 gap-5">
-            ${field("Full name", "Jordan Rivera")}
-            ${field("Email", "you@email.com", "email")}
-            ${field("Mobile number", "+91 98765 43210", "tel", "sm:col-span-2")}
-            ${field("Address", "240 Maple Ave", "text", "sm:col-span-2")}
+            ${field("Full name", "Jordan Rivera", "text", "", `value="${State.currentUser?.name || ''}" required`)}
+            ${field("Email", "you@email.com", "email", "", `value="${State.currentUser?.email || ''}" required`)}
+            <div class="sm:col-span-2">
+                <label class="text-sm font-medium text-ink/80 dark:text-cream/80">Mobile number</label>
+                <div class="flex items-center gap-2 mt-1.5 rounded-xl bg-clay-50 dark:bg-white/5 px-4 outline-none focus-within:ring-2 focus-within:ring-teal-500 focus-within:bg-white dark:focus-within:bg-[#2a221b] transition-all duration-300 shadow-sm hover:shadow">
+                  <span class="text-ink/60 font-semibold border-r border-black/10 dark:border-white/10 pr-3">+91</span>
+                  <input type="tel" required pattern="[0-9]{10}" maxlength="10" placeholder="9876543210" class="w-full py-3 bg-transparent outline-none focus:outline-none" />
+                </div>
+            </div>
+            ${field("Address", "240 Maple Ave", "text", "sm:col-span-2", "required")}
             <div class="sm:col-span-1">
                 <label class="text-sm font-medium text-ink/80 dark:text-cream/80">State</label>
-                <select id="stateSelect" onchange="window.handleStateChange(this)" class="w-full mt-1.5 rounded-xl bg-clay-50 dark:bg-white/5 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white dark:focus:bg-[#2a221b] transition-all duration-300 shadow-sm hover:shadow appearance-none bg-no-repeat" style="background-image: url('data:image/svg+xml;utf8,<svg fill=%22none%22 stroke=%22currentColor%22 viewBox=%220 0 24 24%22 xmlns=%22http://www.w3.org/2000/svg%22><path stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%222%22 d=%22M19 9l-7 7-7-7%22></path></svg>'); background-size: 1.25rem; background-position: right 1rem center;">
+                <select id="stateSelect" required onchange="window.handleStateChange(this)" class="w-full mt-1.5 rounded-xl bg-clay-50 dark:bg-white/5 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white dark:focus:bg-[#2a221b] transition-all duration-300 shadow-sm hover:shadow appearance-none bg-no-repeat" style="background-image: url('data:image/svg+xml;utf8,<svg fill=%22none%22 stroke=%22currentColor%22 viewBox=%220 0 24 24%22 xmlns=%22http://www.w3.org/2000/svg%22><path stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%222%22 d=%22M19 9l-7 7-7-7%22></path></svg>'); background-size: 1.25rem; background-position: right 1rem center;">
                     <option value="" disabled selected>Select State</option>
                     ${indianStates.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
                 </select>
             </div>
             <div class="sm:col-span-1">
                 <label class="text-sm font-medium text-ink/80 dark:text-cream/80">City</label>
-                <select id="citySelect" class="w-full mt-1.5 rounded-xl bg-clay-50 dark:bg-white/5 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white dark:focus:bg-[#2a221b] transition-all duration-300 shadow-sm hover:shadow appearance-none bg-no-repeat" style="background-image: url('data:image/svg+xml;utf8,<svg fill=%22none%22 stroke=%22currentColor%22 viewBox=%220 0 24 24%22 xmlns=%22http://www.w3.org/2000/svg%22><path stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%222%22 d=%22M19 9l-7 7-7-7%22></path></svg>'); background-size: 1.25rem; background-position: right 1rem center;">
+                <select id="citySelect" required class="w-full mt-1.5 rounded-xl bg-clay-50 dark:bg-white/5 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white dark:focus:bg-[#2a221b] transition-all duration-300 shadow-sm hover:shadow appearance-none bg-no-repeat" style="background-image: url('data:image/svg+xml;utf8,<svg fill=%22none%22 stroke=%22currentColor%22 viewBox=%220 0 24 24%22 xmlns=%22http://www.w3.org/2000/svg%22><path stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%222%22 d=%22M19 9l-7 7-7-7%22></path></svg>'); background-size: 1.25rem; background-position: right 1rem center;">
                     <option value="" disabled selected>Select City</option>
                 </select>
             </div>
-            ${field("ZIP / PIN Code", "425001", "text", "sm:col-span-2", 'id="zipInput" oninput="window.handleZipChange(this)" maxlength="6"')}
+            ${field("ZIP / PIN Code", "425001", "text", "sm:col-span-2", 'id="zipInput" oninput="window.handleZipChange(this)" maxlength="6" pattern="[0-9]{6}" required')}
           </div>
         </div>
         <div class="bg-white dark:bg-[#1d1712] rounded-2xl sm:rounded-3xl shadow-soft hover:shadow-lg transition-shadow duration-500 p-6 sm:p-8 border border-black/5 dark:border-white/5">

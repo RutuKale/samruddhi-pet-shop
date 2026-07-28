@@ -73,18 +73,18 @@ function LoginPage() {
         <form id="authForm" class="space-y-3.5">
           <div id="nameField" class="hidden animate-fadeUp" style="animation-duration: 0.4s;">
             <label class="block text-[10px] font-bold uppercase tracking-widest text-ink/70 dark:text-cream/70 mb-1 ml-1">Full name</label>
-            <input type="text" placeholder="e.g. Maya Rivers" class="w-full bg-white dark:bg-[#1d1712] border border-black/10 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all shadow-sm placeholder:text-ink/30 dark:placeholder:text-cream/30"/>
+            <input type="text" id="authName" placeholder="e.g. Maya Rivers" class="w-full bg-white dark:bg-[#1d1712] border border-black/10 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all shadow-sm placeholder:text-ink/30 dark:placeholder:text-cream/30"/>
           </div>
           <div>
             <label class="block text-[10px] font-bold uppercase tracking-widest text-ink/70 dark:text-cream/70 mb-1 ml-1">Email</label>
-            <input type="email" required placeholder="you@example.com" class="w-full bg-white dark:bg-[#1d1712] border border-black/10 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all shadow-sm placeholder:text-ink/30 dark:placeholder:text-cream/30"/>
+            <input type="email" id="authEmail" required placeholder="you@example.com" class="w-full bg-white dark:bg-[#1d1712] border border-black/10 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all shadow-sm placeholder:text-ink/30 dark:placeholder:text-cream/30"/>
           </div>
           <div>
             <div class="flex items-center justify-between mb-1 ml-1 pr-1">
               <label class="block text-[10px] font-bold uppercase tracking-widest text-ink/70 dark:text-cream/70">Password</label>
               <a href="#" class="text-[10px] text-teal-600 dark:text-teal-400 font-semibold hover:underline">Forgot?</a>
             </div>
-            <input type="password" required placeholder="••••••••" class="w-full bg-white dark:bg-[#1d1712] border border-black/10 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all shadow-sm placeholder:text-ink/30 dark:placeholder:text-cream/30"/>
+            <input type="password" id="authPassword" required placeholder="••••••••" class="w-full bg-white dark:bg-[#1d1712] border border-black/10 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all shadow-sm placeholder:text-ink/30 dark:placeholder:text-cream/30"/>
           </div>
           <button type="submit" class="w-full py-2.5 rounded-xl bg-teal-600 text-white text-sm font-bold hover:bg-teal-700 active:scale-[0.98] transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 mt-1" id="authSubmit">
             Log in

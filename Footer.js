@@ -1,29 +1,29 @@
 function FooterComponent() {
   return `
   <!-- ===================== FOOTER ===================== -->
-  <footer class="mt-20 bg-[#09110f] text-cream/90 relative overflow-hidden border-t border-white/5">
+  <footer class="mt-10 md:mt-16 bg-[#09110f] text-cream/90 relative overflow-hidden border-t border-white/5">
     <!-- Premium dynamic background elements -->
     <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMikiLz48L3N2Zz4=')] opacity-30 pointer-events-none"></div>
     <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-teal-600/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 animate-pulse pointer-events-none"></div>
     <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-clay-500/10 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3 animate-[pulse_4s_cubic-bezier(0.4,0,0.6,1)_infinite] pointer-events-none" style="animation-delay: 2s;"></div>
 
-    <div class="relative z-10 mx-auto max-w-8xl px-4 py-16">
+    <div class="relative z-10 mx-auto max-w-8xl px-4 md:px-6 py-10 md:py-12">
       <!-- Main footer grid -->
-      <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
+      <div class="grid gap-8 md:gap-10 grid-cols-2 lg:grid-cols-5">
         <!-- Brand Column -->
-        <div class="lg:col-span-2 flex flex-col items-start pr-0 lg:pr-8">
+        <div class="col-span-2 lg:col-span-2 flex flex-col items-start pr-0 lg:pr-8">
           <a href="#" data-nav="home" class="flex items-center gap-3 mb-6 group">
             <span
               class="grid place-items-center w-14 h-14 sm:w-16 sm:h-16 lg:w-[72px] lg:h-[72px] rounded-full bg-gradient-to-tr from-teal-500 to-teal-300 p-1.5 shadow-[0_0_20px_rgba(20,184,166,0.3)] transition-all duration-500 group-hover:shadow-[0_0_35px_rgba(20,184,166,0.5)] group-hover:-translate-y-1"><img
                 src="./assets/logo.png" alt="Samruddhi" class="w-full h-full object-contain drop-shadow-md" /></span>
             <span class="font-display text-2xl sm:text-3xl font-600 text-white tracking-tight drop-shadow-sm group-hover:text-teal-50 transition-colors">Samruddhi</span>
           </a>
-          <p class="text-base text-cream/70 max-w-md leading-relaxed font-medium">
+          <p class="text-sm md:text-base text-cream/70 max-w-md leading-relaxed font-medium">
             Everything your companion needs — from premium food and healthcare to joyful play and expert care — delivered with the warmth and dedication every family member truly deserves.
           </p>
 
           <!-- Social Icons with glassmorphism design -->
-          <div class="flex gap-4 mt-8">
+          <div class="flex gap-4 mt-5 md:mt-6">
            <a href="https://www.instagram.com/samruddhi_pet_shop_jalgaon"
    target="_blank"
    rel="noopener noreferrer"
@@ -56,19 +56,19 @@ function FooterComponent() {
 
         <!-- Quick Links -->
         <div>
-          <h4 class="font-bold text-white mb-6 text-[13px] tracking-[0.2em] uppercase opacity-90">
+          <h4 class="font-bold text-white mb-4 lg:mb-5 text-[13px] tracking-[0.2em] uppercase opacity-90">
             Quick links
           </h4>
-          <ul class="space-y-4 text-sm font-medium">
-            ${["Shop all:shop", "About us:about", "Contact:contact", "Blog:home?scroll=blog", "Wishlist:wishlist", "Privacy:privacy", "Terms:terms", "Shipping:shipping", "Cookies:cookies"]
+          <ul class="space-y-2.5 md:space-y-3 text-sm font-medium">
+            ${["Shop all:shop", "About us:about", "Contact:contact", "Blog:home?scroll=blog", "Wishlist:wishlist", "Privacy Policy:privacypolicy", "Terms:terms", "Shipping:shipping", "Cookies:cookies"]
       .map(link => {
         const [label, nav] = link.split(":");
         // Extract possible data-nav and data-scroll easily
         let navStr = nav.includes("?") ? `data-nav="${nav.split("?")[0]}" data-scroll="${nav.split("=")[1]}"` : `data-nav="${nav}"`;
         return `
             <li>
-              <a class="text-cream/60 hover:text-teal-300 transition-all duration-300 flex items-center gap-3 group" href="#" ${navStr}>
-                <span class="w-1.5 h-1.5 rounded-full bg-teal-400 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 shadow-[0_0_8px_rgba(45,212,191,0.6)]"></span>
+              <a class="text-cream/60 hover:text-teal-300 transition-all duration-300 flex items-center group relative" href="#" ${navStr}>
+                <span class="absolute -left-4 w-1.5 h-1.5 rounded-full bg-teal-400 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 shadow-[0_0_8px_rgba(45,212,191,0.6)]"></span>
                 <span class="group-hover:translate-x-1 transition-transform duration-300">${label}</span>
               </a>
             </li>`;
@@ -78,18 +78,18 @@ function FooterComponent() {
 
         <!-- Categories -->
         <div>
-          <h4 class="font-bold text-white mb-6 text-[13px] tracking-[0.2em] uppercase opacity-90">
+          <h4 class="font-bold text-white mb-4 lg:mb-5 text-[13px] tracking-[0.2em] uppercase opacity-90">
             Categories
           </h4>
-          <ul id="footerCats" class="space-y-4 text-sm font-medium [&>li>a]:text-cream/60 [&>li>a]:hover:text-teal-300 [&>li>a]:transition-colors [&>li>a]:duration-300"></ul>
+          <ul id="footerCats" class="space-y-2.5 md:space-y-3 text-sm font-medium"></ul>
         </div>
 
         <!-- Support -->
-        <div>
-          <h4 class="font-bold text-white mb-6 text-[13px] tracking-[0.2em] uppercase opacity-90">
+        <div class="col-span-2 lg:col-span-1">
+          <h4 class="font-bold text-white mb-4 lg:mb-5 text-[13px] tracking-[0.2em] uppercase opacity-90">
             Support
           </h4>
-          <ul class="space-y-5 text-sm font-medium">
+          <ul class="space-y-3.5 md:space-y-4 text-sm font-medium">
             <li class="flex items-start gap-4 text-cream/70 group">
               <div class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-teal-500/20 group-hover:text-teal-300 transition-all duration-300">📍</div>
               <span class="leading-relaxed mt-1">SHOP NO 1, near GOLANI MKT, Sangamwadi, Jaikisan Wadi, Jalgaon, Maharashtra 425001</span>
@@ -111,8 +111,8 @@ function FooterComponent() {
       </div>
 
       <!-- Bottom bar with premium subtle separation -->
-      <div class="mt-16 pt-8 border-t border-white/10 relative">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium text-cream/50">
+      <div class="mt-10 md:mt-12 pt-6 border-t border-white/10 relative">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-xs md:text-sm font-medium text-cream/50">
           <p class="flex items-center gap-2">
             © 2026 Samruddhi Pet Shop.
           </p>

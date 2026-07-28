@@ -190,6 +190,10 @@
   <script src="Footer.js"></script>
   <script src="Login.js"></script>
   <script src="Checkout.js"></script>
+  <script src="PrivacyPolicy.js"></script>
+  <script src="Terms.js"></script>
+  <script src="Shipping.js"></script>
+  <script src="Cookies.js"></script>
   <script>
     /* =========================================================================
      PAWMARK — Enhanced with Realistic Hero Images
@@ -957,6 +961,7 @@
       wishlist: [],
       recentlyViewed: [],
       route: "home",
+      isLoggedIn: false,
       shopFilters: {
         pet: "all",
         category: "all",
@@ -966,7 +971,7 @@
         page: 1,
       },
     };
-    const PER_PAGE = 9;
+    const PER_PAGE = 12;
 
     /* -------------------------------------------------------------------------
            3. UTILS
@@ -1096,7 +1101,7 @@
   </div>`;
     }
 
-    function skeletonGrid(n = 8) {
+    function skeletonGrid(n = 12) {
       return `<div class="grid grid-cols-2 lg:grid-cols-4 gap-5">${Array.from({
         length: n,
       })
@@ -1406,16 +1411,40 @@
           }
         });
       }
+
+      // Update auth button
+      const authBtnText = $("#authHeaderBtnText");
+      if (authBtnText) {
+        if (State.isLoggedIn && State.currentUser) {
+          authBtnText.textContent = State.currentUser.name.split(" ")[0] || "Profile";
+          $("#authHeaderBtn").dataset.nav = "home"; // Direct to home or profile page if created
+        } else {
+          authBtnText.textContent = "Login";
+          $("#authHeaderBtn").dataset.nav = "login";
+        }
+      }
     }
 
     /* -------------------------------------------------------------------------
            6. ROUTER
            ------------------------------------------------------------------------- */
     function render(route, opts = {}) {
+      if (route === "checkout" && !State.isLoggedIn) {
+        toast("Please log in to checkout", "warn");
+        State.redirectAfterLogin = "checkout";
+        navigate("login", opts, true);
+        return;
+      }
+      if (route === "login" && State.route !== "login" && State.redirectAfterLogin !== "checkout") {
+        State.redirectAfterLogin = State.route;
+      }
+      if (route !== "login" && route !== "checkout") {
+        State.redirectAfterLogin = null;
+      }
       State.route = route;
       updateActiveNav();
       if (route === "shop" || route === "home") {
-        app.innerHTML = `<div class="mx-auto max-w-7xl px-4 py-12">${skeletonGrid(8)}</div>`;
+        app.innerHTML = `<div class="mx-auto max-w-7xl px-4 py-12">${skeletonGrid(12)}</div>`;
       }
 
       setTimeout(
@@ -1454,6 +1483,15 @@
               break;
             case "services":
               html = ServicesPage();
+              break;
+            case "privacypolicy":
+              html = PrivacyPolicyPage();
+              break;
+            case "terms":
+              html = TermsPage();
+              break;
+            case "shipping":
+              html = ShippingPage();
               break;
             default:
               html = HomePage();
@@ -1501,7 +1539,10 @@
       "success",
       "contact",
       "about",
-      "services"
+      "services",
+      "privacypolicy",
+      "terms",
+      "shipping"
     ]);
 
     function routeToUrl(route, opts = {}) {
@@ -1920,7 +1961,20 @@
         const route = t.dataset.nav;
         if (route === "__placeorder") {
           e.preventDefault();
+          const form = $("#checkoutForm");
+          if (form && !form.checkValidity()) {
+            form.reportValidity();
+            return;
+          }
           placeOrder();
+          return;
+        }
+        if (route === "cookies") {
+          e.preventDefault();
+          closeAll();
+          setTimeout(() => {
+            openCookiesPopup();
+          }, 300); // Wait for offcanvas to animate out if clicked from mobile
           return;
         }
         e.preventDefault();
@@ -2128,8 +2182,73 @@
     document.addEventListener("submit", (e) => {
       if (e.target.id === "authForm") {
         e.preventDefault();
-        toast("Signed in — welcome to the pack! 🐾");
-        setTimeout(() => navigate("home"), 700);
+
+        const email = $("#authEmail").value.trim();
+        const password = $("#authPassword").value.trim();
+        const isRegister = !$("#nameField").classList.contains("hidden");
+
+        toast("Processing...", "info");
+
+        if (isRegister) {
+          const name = $("#authName").value.trim();
+
+          db.collection("users").where("email", "==", email).get().then(snapshot => {
+            if (!snapshot.empty) {
+              toast("Email already exists. Please log in.", "warn");
+            } else {
+              db.collection("users").add({
+                name,
+                email,
+                password,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              }).then(() => {
+                State.isLoggedIn = true;
+                State.currentUser = { name, email };
+                updateActiveNav();
+                toast("Account created — welcome to the pack! 🐾");
+                setTimeout(() => {
+                  let next = State.redirectAfterLogin || "home";
+                  if (next === "checkout" && State.cart.length === 0) next = "home";
+                  navigate(next);
+                }, 700);
+              });
+            }
+          }).catch(err => {
+            console.error(err);
+            toast("An error occurred.", "warn");
+          });
+        } else {
+          db.collection("users").where("email", "==", email).get().then(snapshot => {
+            if (snapshot.empty) {
+              toast("User does not exist. Please register first.", "warn");
+              const regBtn = document.querySelector('[data-auth="register"]');
+              if (regBtn) regBtn.click();
+            } else {
+              let match = null;
+              snapshot.forEach(doc => {
+                if (doc.data().password === password) {
+                  match = doc.data();
+                }
+              });
+              if (!match) {
+                toast("Invalid password.", "warn");
+              } else {
+                State.isLoggedIn = true;
+                State.currentUser = { name: match.name, email: match.email };
+                updateActiveNav();
+                toast(`Welcome back, ${match.name}! 🐾`);
+                setTimeout(() => {
+                  let next = State.redirectAfterLogin || "home";
+                  if (next === "checkout" && State.cart.length === 0) next = "home";
+                  navigate(next);
+                }, 700);
+              }
+            }
+          }).catch(err => {
+            console.error(err);
+            toast("An error occurred.", "warn");
+          });
+        }
       }
       if (e.target.id === "contactForm") {
         e.preventDefault();
@@ -2335,12 +2454,17 @@
     function buildChrome() {
       $("#catDropdown").innerHTML = BRANDS.map(
         (b) =>
-          `< a href = "#" data - nav="shop" data - shop - brand="${b}" class="block px-3 py-2 rounded-xl hover:bg-clay-50 dark:hover:bg-white/5 text-sm" > ${b}</a > `,
+          `<a href="#" data-nav="shop" data-shop-brand="${b}" class="block px-3 py-2 rounded-xl hover:bg-clay-50 dark:hover:bg-white/5 text-sm">${b}</a>`,
       ).join("");
       $("#footerCats").innerHTML = CATEGORIES.slice(0, 6)
         .map(
           (c) =>
-            `< li > <a class="hover:text-clay-300" href="#" data-nav="shop" data-shop-cat="${c}">${c}</a></li > `,
+            `<li>
+              <a class="text-cream/60 hover:text-teal-300 transition-all duration-300 flex items-center group relative" href="#" data-nav="shop" data-shop-cat="${c}">
+                <span class="absolute -left-4 w-1.5 h-1.5 rounded-full bg-teal-400 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 shadow-[0_0_8px_rgba(45,212,191,0.6)]"></span>
+                <span class="group-hover:translate-x-1 transition-transform duration-300">${c}</span>
+              </a>
+            </li>`
         )
         .join("");
     }

@@ -75,13 +75,13 @@ function HeaderComponent() {
             <span id="cartCount"
               class="absolute top-0 right-0 sm:-top-0.5 sm:-right-0.5 min-w-[18px] sm:min-w-[20px] h-[18px] sm:h-5 px-1 grid place-items-center text-[9px] sm:text-[11px] font-bold bg-teal-600 text-white rounded-full hidden shadow-sm">0</span>
           </button>
-          <button data-nav="login"
+          <button id="authHeaderBtn" data-nav="login"
             class="hidden sm:flex items-center gap-2 ml-1 px-4 py-2 rounded-full bg-ink text-cream dark:bg-cream dark:text-ink text-sm font-semibold hover:scale-105 transition shadow-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <circle cx="12" cy="8" r="4" />
               <path d="M4 21a8 8 0 0 1 16 0" />
             </svg>
-            Login
+            <span id="authHeaderBtnText">Login</span>
           </button>
         </div>
       </div>
